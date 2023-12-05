@@ -185,7 +185,7 @@ for kappa_map_name in kappa_60_map_names:
     ax.fill_between(ells, ax.get_ylim()[0], ax.get_ylim()[1], where=(ells > 1900), color='silver', alpha=0.5)
     ax.fill_between(ells, ax.get_ylim()[0], ax.get_ylim()[1], where=(ells < 100), color='silver', alpha=0.5)
 
-    np.savetxt(f'./output/{kappa_map_name}_ellcl.dat', np.column_stack([ell_bins.get_effective_ells(), cl_decoupled])
+    np.savetxt(f'./output/{kappa_map_name}_ellcl.dat', np.column_stack([ell_bins.get_effective_ells(), cl_decoupled]))
 
     plt.axhline(0.0, color='k')#, linestyle='dashed', alpha=0.4)
     plt.xlabel('$\ell$')
