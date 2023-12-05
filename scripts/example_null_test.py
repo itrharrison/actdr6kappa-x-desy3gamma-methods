@@ -118,7 +118,7 @@ kappa_mask = reproject.map2healpix(kappa_mask,
                                    nside_mode="pow2", boundary="constant", verbose=False)
 
 # t_fields_end = time.time()
-print('Done in {}s.'.format(t_fields_start - t_fields_end))
+# print('Done in {}s.'.format(t_fields_start - t_fields_end))
 
 for kappa_map_name in kappa_60_map_names:
 
@@ -143,7 +143,7 @@ for kappa_map_name in kappa_60_map_names:
     # t_coupling_start = time.time()
     for ibin in np.arange(1, nbins_tomo + 1):
 
-        workspace_fname = f'workspace_{kappa_map_name}_kappagamma_bin{ibin}.fits'
+        workspace_fname = f'workspace_kappagamma_bin{ibin}.fits'
 
         if os.path.exists(workspace_fname):
             workspace_kappagamma[ibin] = nmt.NmtWorkspace()
@@ -153,7 +153,7 @@ for kappa_map_name in kappa_60_map_names:
             workspace_kappagamma[ibin].compute_coupling_matrix(kappa_field, gamma_field[ibin], ell_bins)
             workspace_kappagamma[ibin].write_to(workspace_fname)
     # t_coupling_end = time.time()
-    print('Done in {}s.'.format(t_coupling_start - t_coupling_end))
+    # print('Done in {}s.'.format(t_coupling_start - t_coupling_end))
 
     cl_coupled = {}
     cl_decoupled = {}
@@ -165,13 +165,13 @@ for kappa_map_name in kappa_60_map_names:
         # t_coupledcl_start = time.time()
         cl_coupled[ibin] = nmt.compute_coupled_cell(gamma_field[ibin], kappa_field)
         # t_coupledcl_end = time.time()
-        print('Done in {}s.'.format(t_coupledcl_start - t_coupledcl_end))
+        # print('Done in {}s.'.format(t_coupledcl_start - t_coupledcl_end))
 
         print('Getting decoupled Cls...')
         # t_decoupledcl_start = time.time()
         cl_decoupled[ibin] = workspace_kappagamma[ibin].decouple_cell(cl_coupled[ibin])[0]
         # t_decoupledcl_end = time.time()
-        print('Done in {}s.'.format(t_decoupledcl_start - t_decoupledcl_end))
+        # print('Done in {}s.'.format(t_decoupledcl_start - t_decoupledcl_end))
 
     plt.close('all')
     plt.figure(1, figsize=(4.5, 3.75))
