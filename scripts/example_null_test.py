@@ -22,8 +22,8 @@ delta_ell = 300
 
 nbins_tomo = 4
 
-kappa_dir = os.path.join(data_dir, 'data/null_tests/')
-# gamma_dir = os.path.join(data_dir, 'data/des/DESY3_blind_cat_e1e2_maps/')
+kappa_dir = os.path.join(data_dir, 'data/act/')
+gamma_dir = os.path.join(data_dir, 'data/des/DESY3_blind_cat_e1e2_maps/')
 
 kappa_60_map_names = [
                         'coadd_4splitlensingmapMV.fits',
@@ -37,7 +37,7 @@ kappa_60_map_names = [
                     ]
 
 # kappa_map_name = 'coadd_4splitlensingmapMV.fits'
-# kappa_mask_name = 'act_mask_20220316_GAL060_rms_70.00_d2sk.fits'
+kappa_mask_name = 'masks/act_mask_20220316_GAL060_rms_70.00_d2sk.fits'
 
 g1_map_name = 'blind_DESY3_meansub_Rcorrected_g1_map_binX_nside2048.fits'
 g2_map_name = 'blind_DESY3_meansub_Rcorrected_g2_map_binX_nside2048.fits'
@@ -94,7 +94,7 @@ for ibin in np.arange(1, nbins_tomo + 1):
 
     print(f'DES bin {ibin} field...')
 
-    # gamma_mask = hp.read_map(os.path.join(gamma_dir, weight_map_name.replace('binX', f'bin{ibin}')))
+    gamma_mask = hp.read_map(os.path.join(gamma_dir, weight_map_name.replace('binX', f'bin{ibin}')))
 
     g1_field_name = g1_map_name.replace('binX', f'bin{ibin}').rstrip('.fits')
     g2_field_name = g2_map_name.replace('binX', f'bin{ibin}').rstrip('.fits')
