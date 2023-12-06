@@ -33,8 +33,19 @@ kappa_60_map_names = [
                         'coaddc_4splitlensingmapMV.fits',
                         'kappa_MV_alms.fits',
                         'kappa_MVPOL_alms.fits',
-                        # 'kappa_TT_alms.fit',
+                        'kappa_TT_alms.fits',
                     ]
+
+mc_norm_names = {
+                'coadd_4splitlensingmapMV.fits': 'all_MV_mc_bias_MV_sims1-400',
+                'coadd_4splitlensingmapMVPOL.fits': 'all_MVPOL_mc_bias_MVPOL_sims1-400',
+                'coadd_4splitlensingmapnomaskTT.fits': 'all_TT_mc_bias_TT_sims1-400',
+                'coadd_4splitlensingmapTT.fits': 'all_TT_mc_bias_TT_sims1-400',
+                'coaddc_4splitlensingmapMV.fits': 'all_MV_mc_bias_MV_sims1-400',
+                'kappa_MV_alms.fits': 'all_MV_mc_bias_MV_sims1-400',
+                'kappa_MVPOL_alms.fits': 'all_MVPOL_mc_bias_MVPOL_sims1-400',
+                'kappa_TT_alms.fits': 'all_TT_mc_bias_TT_sims1-400',
+                }
 
 # kappa_map_name = 'coadd_4splitlensingmapMV.fits'
 kappa_mask_name = 'masks/act_mask_20220316_GAL060_rms_70.00_d2sk.fits'
@@ -127,10 +138,17 @@ for kappa_map_name in kappa_60_map_names:
     # t_fields_start = time.time()
 
     kappa_field_name = kappa_map_name.rstrip('.fits') + '_' + kappa_mask_name.rstrip('.fits')
+
+    mc_norm_correction = np.loadtxt(os.path.join(kappa_dir, 'mc_norm_corrections', mc_norm_names[kappa_map_name]))
+    mc_norm_correction = np.nan_to_num(mc_norm_correction, nan=1.0, posinf=1., neginf=1.) # first two values are numerically not defined
+
     kappa_field_fname = os.path.join(kappa_dir, kappa_field_name + '.pkl')
 
     # load act null test map
     kappa_alms = hp.read_alm(os.path.join(kappa_dir, kappa_map_name)).astype('complex128')
+
+    kappa_alms = hp.almxfl(kappa_alms, mc_norm_correction)
+
     kappa_map = hp.alm2map(np.nan_to_num(kappa_alms), nside=nside)
 
 
