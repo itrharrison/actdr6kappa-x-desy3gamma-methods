@@ -1,0 +1,98 @@
+dirs:
+  root: ${ACTDIR}
+  kappa_dir: 'data/act/'
+  tracer_dir: 'data/des/DESY3_blind_cat_e1e2_maps/'
+  transfer_dir: 'data/act/mc_norm_corrections/'
+  workspace_dir: 'workspaces/'
+
+config:
+  nside: 2048
+  ell_min: 20
+  ell_max: 4096
+  delta_ell: 300
+  nsims: 400
+
+tracer:
+  tracer_spin: 2
+  tracer_spin_tags: ['g1', 'g2']
+  tracer_nbins: 4
+  tracer_bin_tags: ['bin1']
+  tracer_maps:
+    bin1:
+      g1: 'blind_DESY3_meansub_Rcorrected_g1_map_bin1_nside2048.fits'
+      g2: 'blind_DESY3_meansub_Rcorrected_g2_map_bin1_nside2048.fits'
+    bin2:
+      g1: 'blind_DESY3_meansub_Rcorrected_g1_map_bin2_nside2048.fits'
+      g2: 'blind_DESY3_meansub_Rcorrected_g2_map_bin2_nside2048.fits'
+    bin3:
+      g1: 'blind_DESY3_meansub_Rcorrected_g1_map_bin3_nside2048.fits'
+      g2: 'blind_DESY3_meansub_Rcorrected_g2_map_bin3_nside2048.fits'
+    bin4:
+      g1: 'blind_DESY3_meansub_Rcorrected_g1_map_bin4_nside2048.fits'
+      g2: 'blind_DESY3_meansub_Rcorrected_g2_map_bin4_nside2048.fits'
+  tracer_masks:
+    bin1: 'weight_map_bin1_nside2048.fits'
+    bin2: 'weight_map_bin2_nside2048.fits'
+    bin3: 'weight_map_bin3_nside2048.fits'
+    bin4: 'weight_map_bin4_nside2048.fits'
+
+nulltests:
+  - name: 'baseline'
+    kappa_map: 'v_baseline_MV/stage_auto/kappa_MV_alms.fits'
+    # kappa_mask: 'act_mask_20220316_GAL060_rms_70.00_d2sk.fits'
+    kappa_mask: 'act_GAL060_mask_healpy_nside=2048.fits'
+    transfer_function: 'all_MV_mc_bias_MV_sims1-400'
+
+  - name: 'baseline_40_mask'
+    kappa_map: 'v_baseline_MV/stage_auto/kappa_MV_alms.fits'
+    kappa_mask: 'act_GAL040_mask_healpy_nside=2048.fits'
+
+
+  - name: 'baseline_curl'
+    kappa_map: 'v_baseline_MV/stage_auto/coaddc_4splitlensingmapMV.fits'
+    kappa_mask: 'act_GAL060_mask_healpy_nside=2048.fits'
+
+
+  - name: 'mvpol'
+    kappa_map: 'v_all_MVPOLsub/stage_auto/kappa_MVPOL_alms.fits'
+    kappa_mask: 'act_GAL060_mask_healpy_nside=2048.fits'
+
+
+  - name: 'tt'
+    kappa_map: 'v_all_TTsub/stage_auto/kappa_TT_alms.fits'
+    kappa_mask: 'act_GAL060_mask_healpy_nside=2048.fits'
+
+
+  - name: 'f150_tt'
+    kappa_map: 'v_150_TTsub/stage_auto/kappa_TT_alms.fits'
+    kappa_mask: 'act_GAL060_mask_healpy_nside=2048.fits'
+
+
+  - name: 'f090_tt'
+    kappa_map: 'v_90_TTsub/stage_auto/kappa_TT_alms.fits'
+    kappa_mask: 'act_GAL060_mask_healpy_nside=2048.fits'
+
+
+  - name: 'f150_mv'
+    kappa_map: 'v_150_MVsub/stage_auto/kappa_MV_alms.fits'
+    kappa_mask: 'act_GAL060_mask_healpy_nside=2048.fits'
+
+
+  - name: 'f090_mv'
+    kappa_map: 'v_90_MVsub/stage_auto/kappa_MV_alms.fits'
+    kappa_mask: 'act_GAL060_mask_healpy_nside=2048.fits'
+
+
+  - name: 'f150-f090_TT'
+    kappa_map: 'f_15090_TTsub/stage_auto/coadd_4splitlensingmapTT.fits'
+    kappa_mask: 'act_GAL060_mask_healpy_nside=2048.fits'
+
+
+  - name: 'f150-f090_MV'
+    kappa_map: 'f_15090_MVsub/stage_auto/coadd_4splitlensingmapMV.fits'
+    kappa_mask: 'act_GAL060_mask_healpy_nside=2048.fits'
+
+
+  - name: 'f150-f090_MV_40_mask'
+    kappa_map: 'f_15090_MVsub/stage_auto/coadd_4splitlensingmapMV.fits'
+    kappa_mask: 'act_GAL040_mask_healpy_nside=2048.fits'
