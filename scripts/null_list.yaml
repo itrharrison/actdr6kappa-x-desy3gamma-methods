@@ -16,7 +16,7 @@ tracer:
   tracer_spin: 2
   tracer_spin_tags: ['g1', 'g2']
   tracer_nbins: 4
-  tracer_bin_tags: ['bin1']
+  tracer_bin_tags: ['bin1', 'bin2', 'bin3', 'bin4']
   tracer_maps:
     bin1:
       g1: 'blind_DESY3_meansub_Rcorrected_g1_map_bin1_nside2048.fits'
