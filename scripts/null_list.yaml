@@ -10,7 +10,8 @@ config:
   ell_min: 20
   ell_max: 4096
   delta_ell: 300
-  nsims: 400
+  # nsims: 400
+  nsims: 4
 
 tracer:
   tracer_spin: 2

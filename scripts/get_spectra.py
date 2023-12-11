@@ -19,6 +19,7 @@ class NullSpectrum():
         self.ell_min = ini['config']['ell_min']
         self.ell_max = ini['config']['ell_max']
         self.delta_ell = ini['config']['delta_ell']
+        self.nsims = ini['config']['nsims']
 
         self.dirs = ini['dirs']
         self.tracer_config = ini['tracer']
