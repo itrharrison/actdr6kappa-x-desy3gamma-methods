@@ -54,8 +54,6 @@ for sim_tag in enumerate(sim_tags_list):
 
     cl_decoupled[sim_tag] = nullspectra.measure_cls(baseline_test)
 
-    import pdb; pdb.set_trace()
-
 # consolidate results here
 comm.barrier()
 tot_cl_decoupled = comm.reduce(cl_decoupled, op=lambda x,y: x|y, root=0)

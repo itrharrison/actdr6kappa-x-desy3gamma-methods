@@ -214,6 +214,8 @@ class NullSpectrum():
             cl_coupled[bin_tag] = nmt.compute_coupled_cell(self.tracer_fields[bin_tag], nulltest['kappa_field'])
             cl_decoupled[bin_tag] = workspace.decouple_cell(cl_coupled[bin_tag])[0]
 
+            import pdb; pdb.set_trace()
+
         print('Done.')
 
         return cl_decoupled
@@ -221,14 +223,24 @@ class NullSpectrum():
 
 if __name__ == '__main__':
 
+    import pickle
+
     nullspectra = NullSpectrum(config_fname='scripts/null_list.yaml')
 
     nullspectra.setup_binning()
     nullspectra.setup_tracer_fields()
 
-    baseline_test = nullspectra.nulltests[0]
+    for null_test in nullspectra.nulltests:
 
-    baseline_test['kappa_field'] = nullspectra.setup_act_field(baseline_test)
-    nullspectra.setup_workspaces(baseline_test)
-    cl_decoupled = nullspectra.measure_cls(baseline_test)
+        print('Starting null test {}...'.format(null_test['name']))
+
+        null_test_cl_fname = os.path.join(nullspectra.dirs['root'], nullspectra.dirs['cl_output_dir'], '{}_cls.pkl'.format(null_test['name']))
+
+        null_test['kappa_field'] = nullspectra.setup_act_field(null_test)
+        
+        nullspectra.setup_workspaces(null_test)
+        cl_decoupled = nullspectra.measure_cls(null_test)
+
+        pickle.dump(cl_decoupled, open(null_test_cl_fname, 'wb'))
+
 
