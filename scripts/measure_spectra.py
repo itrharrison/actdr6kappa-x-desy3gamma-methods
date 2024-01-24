@@ -74,13 +74,17 @@ kappa_map = hp.read_map('data/act/hp_nside2048_lmax6000_act_planck_dr4.01_s14s15
 
 g1_map = hp.read_map('data/des/DESY3_cat_e1e2_maps/DESY3_meansub_Rcorrected_g1_map_bin4_nside2048.fits')
 g2_map = hp.read_map('data/des/DESY3_cat_e1e2_maps/DESY3_meansub_Rcorrected_g2_map_bin4_nside2048.fits')
+mod_g_map = np.sqrt(g1_map**2. + g2_map**2.)
 
 mask_pwr = 2
 
-kappa_mask = hp.read_map('data/act/masks/act_GAL060_mask_healpy_nside=2048.fits')
-# kappa_mask = hp.read_map('data/act/hp_nside2048_lmax6000_act_dr4.01_s14s15_D56_lensing_mask.fits')
+# kappa_mask = hp.read_map('data/act/masks/act_GAL060_mask_healpy_nside=2048.fits')
+kappa_mask = hp.read_map('data/act/hp_nside2048_lmax6000_act_dr4.01_s14s15_D56_lensing_mask.fits')
 kappa_mask = np.where(kappa_mask > 1, 1, kappa_mask)
 kappa_mask = np.where(kappa_mask < 1e-2, 0, kappa_mask)
+
+kappa_map_weight = np.mean(kappa_mask**2.)
+kappa_map_weight =  0.5709974
 
 kappa_mask = kappa_mask**mask_pwr
 
@@ -88,16 +92,18 @@ gamma_mask = hp.read_map('data/des/DESY3_blind_cat_e1e2_maps/weight_map_bin4_nsi
 # gamma_mask = np.where(gamma_mask > 1, 1, gamma_mask)
 # gamma_mask = np.where(gamma_mask < 1e-2, 0, gamma_mask)
 
+comb_mask = kappa_mask * gamma_mask
+
 print('Done.')
 
 wsp = nmt.NmtWorkspace()
-wsp_moi = nmt.NmtWorkspace()
+# wsp_moi = nmt.NmtWorkspace()
 
 print('Fields...')
 # kappa_field_moi = nmt.NmtField(kappa_mask, [kappa_map], spin=0, masked_on_input=True)#, beam=None, masked_on_input=True)
 # gamma_field_moi = nmt.NmtField(gamma_mask, [g1_map, g2_map], spin=2, masked_on_input=True)#, purify_b=False, beam=None)
-kappa_field = nmt.NmtField(kappa_mask, [kappa_map], beam=None, masked_on_input=False)#, beam=None, masked_on_input=False)
-gamma_field = nmt.NmtField(gamma_mask, [g1_map, g2_map], purify_b=False, beam=None)#, purify_b=False, beam=None)
+kappa_field = nmt.NmtField(kappa_mask, [kappa_map * kappa_map_weight], beam=None, masked_on_input=True)#, beam=None, masked_on_input=False)
+gamma_field = nmt.NmtField(gamma_mask, [-1.0 * g1_map, g2_map], purify_b=False, beam=None)#, purify_b=False, beam=None)
 print('Done.')
 
 print('Coupling...')
@@ -108,6 +114,9 @@ print('Done.')
 
 print('Measuring...')
 cl_kappagamma = compute_master(kappa_field, gamma_field, wsp)
+cl_kappagamma_ana = hp.anafast([kappa_map * comb_mask, g1_map * comb_mask, g2_map * comb_mask])
+cl_kappagamma_ana = binning.bin_cell(cl_kappagamma_ana[3,:2201])
+# cl_kappagamma = nmt.workspaces.compute_full_master(kappa_field, gamma_field, binning)
 # cl_kappagamma_moi = compute_master(kappa_field_moi, gamma_field_moi, wsp_moi)
 print('Done.')
 

@@ -62,7 +62,7 @@ class NullSpectrum():
         self.ell_bins = nmt.NmtBin(nside=self.nside, bpws=bpws, ells=ells, weights=weights, lmax=self.ell_max)
         print('Done.')
 
-    def setup_tracer_fields(self, masked_on_input=True):
+    def setup_tracer_fields(self, masked_on_input=False, g1_convention=-1.):
         '''Set up the namaster NmtField corresponding to the non-ACT tracer maps being 
         used in the cross-correlation.
 
@@ -75,6 +75,7 @@ class NullSpectrum():
         self.tracer_spin = self.tracer_config['tracer_spin']
         self.tracer_nbins = self.tracer_config['tracer_nbins']
         self.tracer_fields = {}
+        self.tracer_maps = {}
 
         tracer_dir = os.path.join(self.dirs['root'], self.dirs['tracer_dir'])
 
@@ -86,18 +87,24 @@ class NullSpectrum():
 
             tracer_mask = hp.read_map(os.path.join(tracer_dir, tracer_mask_fname))
 
-            tracer_maps = []
+            self.tracer_maps[bin_tag] = []
 
             for ispin, spin_tag in enumerate(self.tracer_config['tracer_spin_tags']):
                 tracer_map_fname = self.tracer_config['tracer_maps'][bin_tag][spin_tag]
-                tracer_maps.append(hp.read_map(os.path.join(tracer_dir, tracer_map_fname)))
+                tracer_map = hp.read_map(os.path.join(tracer_dir, tracer_map_fname))
                 
-            self.tracer_fields[bin_tag] = nmt.NmtField(tracer_mask, tracer_maps,
+                if spin_tag == 'g1':
+                    tracer_map = tracer_map * g1_convention
+                
+                self.tracer_maps[bin_tag].append(tracer_map)
+                
+            self.tracer_fields[bin_tag] = nmt.NmtField(tracer_mask, self.tracer_maps[bin_tag],
+                                                       purify_b=False, beam=None,
                                                        masked_on_input=masked_on_input)
 
         print('Done.')
 
-    def setup_act_field(self, nulltest, masked_on_input=True, remove_mask_apod=False):
+    def setup_act_field(self, nulltest, masked_on_input=True, remove_mask_apod=True):
         '''Set up the namaster NmtField corresponding to the ACT kappa map being used in 
         the cross-correlation.
 
@@ -124,6 +131,7 @@ class NullSpectrum():
 
         try:
             kappa_mask = enmap.read_map(os.path.join(kappa_dir, 'masks', kappa_mask_fname))
+            kappa_mask_weight = np.mean(kappa_mask**2.)
             kappa_mask = reproject.map2healpix(kappa_mask,
                                                nside=self.nside, lmax=None, out=None, rot=None,
                                                spin=[0,2], method="spline", order=0,
@@ -131,9 +139,12 @@ class NullSpectrum():
                                                nside_mode="pow2", boundary="constant", verbose=False)
         except ValueError:
             kappa_mask = hp.read_map(os.path.join(kappa_dir, 'masks', kappa_mask_fname))**2.
+            kappa_mask_weight = 1.
 
         if remove_mask_apod:
-            kappa_mask = np.piecewise(kappa_mask, [kappa_mask>=1-1e-10, kappa_mask<1-1e-10], [1, 0])
+            # kappa_mask = np.piecewise(kappa_mask, [kappa_mask>=1-1e-10, kappa_mask<1-1e-10], [1, 0])
+            kappa_mask = np.where(kappa_mask > 1, 1, kappa_mask)
+            kappa_mask = np.where(kappa_mask < 1e-2, 0, kappa_mask)
 
         if 'transfer_function' in nulltest.keys():
             transfer_dir = self.dirs['transfer_dir']
@@ -146,7 +157,9 @@ class NullSpectrum():
 
         kappa_map = hp.alm2map(np.nan_to_num(kappa_alms), nside=self.nside)
 
-        kappa_field = nmt.NmtField(kappa_mask, [kappa_map], masked_on_input=masked_on_input)
+        kappa_field = nmt.NmtField(kappa_mask, [kappa_map * kappa_mask_weight],
+                                   beam=None,
+                                   masked_on_input=masked_on_input)
 
         print('Done.')
 
@@ -213,8 +226,6 @@ class NullSpectrum():
 
             cl_coupled[bin_tag] = nmt.compute_coupled_cell(self.tracer_fields[bin_tag], nulltest['kappa_field'])
             cl_decoupled[bin_tag] = workspace.decouple_cell(cl_coupled[bin_tag])[0]
-
-            import pdb; pdb.set_trace()
 
         print('Done.')
 
