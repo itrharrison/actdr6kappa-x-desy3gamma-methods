@@ -2,6 +2,8 @@ import os
 import yaml
 import pickle
 
+from mpi4py import MPI
+
 from get_spectra import NullSpectrum
 
 class NullCovMat():
@@ -30,15 +32,21 @@ class NullCovMat():
 
         for null_test in nullspectra.nulltests:
 
+            comm = MPI.COMM_WORLD
+            rank = comm.Get_rank()
+            size = comm.Get_size()
+
             print('Starting null test {}...'.format(null_test['name']))
 
-            for isim in np.arange(self.nsims):
+            sim_tags_list = np.arange(rank, self.nsims, size)
 
-                print('Gettign Cls from sim {}...'.format(isim))
+            for isim, sim_tag in enumerate(sim_tags_list):
 
-                null_test_cl_fname = os.path.join(nullspectra.dirs['root'], nullspectra.dirs['cl_output_dir'], '{}_cls_sim_{}.pkl'.format(null_test['name'], isim))
+                print('Gettign Cls from sim {} on proc {}...'.format(sim_tag, rank))
 
-                null_test['kappa_map'] = null_test['sims'] + '_{:i}.fits'.format(isim)
+                null_test_cl_fname = os.path.join(nullspectra.dirs['root'], nullspectra.dirs['cl_output_dir'], '{}_cls_sim_{}.pkl'.format(null_test['name'], sim_tag))
+
+                null_test['kappa_map'] = null_test['sims'] + '_{:i}.fits'.format(sim_tag)
                 null_test['kappa_field'] = nullspectra.setup_act_field(null_test, sim_map=True)
 
                 nullspectra.setup_workspaces(null_test)
@@ -46,3 +54,12 @@ class NullCovMat():
                 cl_decoupled = nullspectra.measure_cls(null_test)
 
                 pickle.dump(cl_decoupled, open(null_test_cl_fname, 'wb'))
+
+if __name__ == '__main__':
+
+    import pickle
+
+    nullcovmats = NullCovMat(config_fname='scripts/null_list.yaml')
+
+    nullcovmats.get_spectra_set()
+
