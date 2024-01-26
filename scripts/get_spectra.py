@@ -104,7 +104,7 @@ class NullSpectrum():
 
         print('Done.')
 
-    def setup_act_field(self, nulltest, masked_on_input=True, remove_mask_apod=True):
+    def setup_act_field(self, nulltest, sim_map=False, masked_on_input=True, remove_mask_apod=True):
         '''Set up the namaster NmtField corresponding to the ACT kappa map being used in 
         the cross-correlation.
 
@@ -122,8 +122,10 @@ class NullSpectrum():
         '''
 
         print('Getting ACT field...')
-
-        kappa_dir = self.dirs['kappa_dir']
+        if sim_map:
+            kappa_dir = self.dirs['sims_dir']
+        else:    
+            kappa_dir = self.dirs['kappa_dir']
         kappa_map_fname = nulltest['kappa_map']
         kappa_mask_fname = nulltest['kappa_mask']
 
