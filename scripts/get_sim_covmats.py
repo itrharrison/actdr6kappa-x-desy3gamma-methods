@@ -16,6 +16,7 @@ class NullCovMat():
         self.nsims = ini['config']['nsims']
         self.dirs = ini['dirs']
         self.nulltests = ini['nulltests']
+        self.config_fname = config_fname
 
         # check if environment variable has been specified for root dir
         if self.dirs['root'].startswith('${'):
