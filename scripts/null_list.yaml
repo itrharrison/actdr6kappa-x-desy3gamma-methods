@@ -2,7 +2,8 @@ dirs:
   root: ${ACTDIR}
   # root: './'
   kappa_dir: 'data/act/'
-  sims_dir: 'sims/act/'
+  sims_dir: 'sims/'
+  kappa_mask_dir: 'data/act/masks/'
   tracer_dir: 'data/des/DESY3_cat_e1e2_maps/'
   transfer_dir: 'data/act/mc_norm_corrections/'
   workspace_dir: 'workspaces/'
@@ -15,8 +16,8 @@ config:
   ell_max: 4000
   # delta_ell: 300
   delta_ell: 40
-  # nsims: 400
-  nsims: 4
+  nsims: 400
+  # nsims: 4
 
 tracer:
   tracer_spin: 2
@@ -79,7 +80,7 @@ nulltests:
     kappa_map: 'v_all_MVPOLsub/stage_auto/kappa_MVPOL_alms.fits'
     kappa_mask: 'act_GAL060_mask_healpy_nside=2048.fits'
     transfer_function: 'all_MVPOL_mc_bias_MVPOL_sims1-400'
-    sims_maps: 'MVPOL/all_MVPOL_simlensing_mf-sub_mc-corr_MVPOL'
+    sim_maps: 'MVPOL/all_MVPOL_simlensing_mf-sub_mc-corr_MVPOL'
     map_null: False
     baseline_name: 'baseline'
 

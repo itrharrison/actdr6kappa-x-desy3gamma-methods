@@ -1,6 +1,7 @@
 import os
 import yaml
 import pickle
+import numpy as np
 
 from mpi4py import MPI
 
@@ -43,11 +44,11 @@ class NullCovMat():
 
             for isim, sim_tag in enumerate(sim_tags_list):
 
-                print('Gettign Cls from sim {} on proc {}...'.format(sim_tag, rank))
+                print('Getting Cls from sim {} on proc {}...'.format(sim_tag + 1, rank))
 
-                null_test_cl_fname = os.path.join(nullspectra.dirs['root'], nullspectra.dirs['cl_output_dir'], '{}_cls_sim_{}.pkl'.format(null_test['name'], sim_tag))
+                null_test_cl_fname = os.path.join(nullspectra.dirs['root'], nullspectra.dirs['cl_output_dir'], '{}_cls_sim_{}.pkl'.format(null_test['name'], sim_tag + 1))
 
-                null_test['kappa_map'] = null_test['sims'] + '_{:i}.fits'.format(sim_tag)
+                null_test['kappa_map'] = null_test['sim_maps'] + '_{:d}.fits'.format(sim_tag + 1)
                 null_test['kappa_field'] = nullspectra.setup_act_field(null_test, sim_map=True)
 
                 nullspectra.setup_workspaces(null_test)

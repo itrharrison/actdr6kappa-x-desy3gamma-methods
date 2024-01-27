@@ -129,10 +129,10 @@ class NullSpectrum():
         kappa_map_fname = nulltest['kappa_map']
         kappa_mask_fname = nulltest['kappa_mask']
 
-        kappa_alms = hp.read_alm(os.path.join(kappa_dir, kappa_map_fname)).astype('complex128')
+        kappa_alms = hp.read_alm(os.path.join(self.dirs['root'], kappa_dir, kappa_map_fname)).astype('complex128')
 
         try:
-            kappa_mask = enmap.read_map(os.path.join(kappa_dir, 'masks', kappa_mask_fname))
+            kappa_mask = enmap.read_map(os.path.join(self.dirs['root'], self.dirs['kappa_mask_dir'],  kappa_mask_fname))
             kappa_mask_weight = np.mean(kappa_mask**2.)
             kappa_mask = reproject.map2healpix(kappa_mask,
                                                nside=self.nside, lmax=None, out=None, rot=None,
@@ -140,7 +140,7 @@ class NullSpectrum():
                                                extensive=False, bsize=100000,
                                                nside_mode="pow2", boundary="constant", verbose=False)
         except ValueError:
-            kappa_mask = hp.read_map(os.path.join(kappa_dir, 'masks', kappa_mask_fname))**2.
+            kappa_mask = hp.read_map(os.path.join(self.dirs['root'], self.dirs['kappa_mask_dir'], kappa_mask_fname))**2.
             kappa_mask_weight = 1.
 
         if remove_mask_apod:
@@ -152,7 +152,7 @@ class NullSpectrum():
             transfer_dir = self.dirs['transfer_dir']
             transfer_name = nulltest['transfer_function']
             
-            transfer_function = np.loadtxt(os.path.join(transfer_dir, transfer_name))
+            transfer_function = np.loadtxt(os.path.join(self.dirs['root'], transfer_dir, transfer_name))
             transfer_function = np.nan_to_num(transfer_function, nan=1.0, posinf=1., neginf=1.) # first two values are numerically not defined
 
             kappa_alms = hp.almxfl(kappa_alms, transfer_function)
