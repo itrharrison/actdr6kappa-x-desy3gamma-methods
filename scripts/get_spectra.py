@@ -62,7 +62,7 @@ class NullSpectrum():
         self.ell_bins = nmt.NmtBin(nside=self.nside, bpws=bpws, ells=ells, weights=weights, lmax=self.ell_max)
         print('Done.')
 
-    def setup_tracer_fields(self, masked_on_input=False, g1_convention=-1.):
+    def setup_tracer_fields(self, masked_on_input=False, g1_convention=-1., isim=None):
         '''Set up the namaster NmtField corresponding to the non-ACT tracer maps being 
         used in the cross-correlation.
 
@@ -90,13 +90,20 @@ class NullSpectrum():
             self.tracer_maps[bin_tag] = []
 
             for ispin, spin_tag in enumerate(self.tracer_config['tracer_spin_tags']):
-                tracer_map_fname = self.tracer_config['tracer_maps'][bin_tag][spin_tag]
-                tracer_map = hp.read_map(os.path.join(tracer_dir, tracer_map_fname))
+                
+                if isim is not None:
+                    tracer_map_fname = self.tracer_config['tracer_sim_maps'].replace('bin_tag', bin_tag).replace('sim_tag', f'{isim:05}')
+                    if spin_tag == 'g1':
+                        tracer_map = hp.read_map(os.path.join(tracer_dir, tracer_map_fname), field=0)
+                    else if spin_tag == 'g2':
+                        tracer_map = hp.read_map(os.path.join(tracer_dir, tracer_map_fname), field=1)
+                else:
+                    tracer_map_fname = self.tracer_config['tracer_maps'][bin_tag][spin_tag]
+                    tracer_map = hp.read_map(os.path.join(tracer_dir, tracer_map_fname))
                 
                 if spin_tag == 'g1':
                     tracer_map = tracer_map * g1_convention
-                
-                self.tracer_maps[bin_tag].append(tracer_map)
+
                 
             self.tracer_fields[bin_tag] = nmt.NmtField(tracer_mask, self.tracer_maps[bin_tag],
                                                        purify_b=False, beam=None,
@@ -230,6 +237,8 @@ class NullSpectrum():
             cl_decoupled[bin_tag] = workspace.decouple_cell(cl_coupled[bin_tag])[0]
 
         print('Done.')
+
+        import pdb; pdb.setup_trace()
 
         return cl_decoupled
 
