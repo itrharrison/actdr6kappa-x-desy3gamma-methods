@@ -235,7 +235,10 @@ class NullSpectrum():
             workspace.read_from(workspace_fname)
 
             cl_coupled[bin_tag] = nmt.compute_coupled_cell(self.tracer_fields[bin_tag], nulltest['kappa_field'])
-            cl_decoupled[bin_tag] = workspace.decouple_cell(cl_coupled[bin_tag])[0]
+            if nulltest['name'].endswith('curl'):
+                cl_decoupled[bin_tag] = workspace.decouple_cell(cl_coupled[bin_tag])[3]
+            else:
+                cl_decoupled[bin_tag] = workspace.decouple_cell(cl_coupled[bin_tag])[0]
 
         print('Done.')
 
