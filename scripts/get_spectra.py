@@ -95,7 +95,7 @@ class NullSpectrum():
                     tracer_map_fname = self.tracer_config['tracer_sim_maps'].replace('bin_tag', bin_tag).replace('sim_tag', f'{isim:05}')
                     if spin_tag == 'g1':
                         tracer_map = hp.read_map(os.path.join(tracer_dir, tracer_map_fname), field=0)
-                    else if spin_tag == 'g2':
+                    elif spin_tag == 'g2':
                         tracer_map = hp.read_map(os.path.join(tracer_dir, tracer_map_fname), field=1)
                 else:
                     tracer_map_fname = self.tracer_config['tracer_maps'][bin_tag][spin_tag]
@@ -104,6 +104,7 @@ class NullSpectrum():
                 if spin_tag == 'g1':
                     tracer_map = tracer_map * g1_convention
 
+                self.tracer_maps[bin_tag].append(tracer_map)
                 
             self.tracer_fields[bin_tag] = nmt.NmtField(tracer_mask, self.tracer_maps[bin_tag],
                                                        purify_b=False, beam=None,
@@ -237,8 +238,6 @@ class NullSpectrum():
             cl_decoupled[bin_tag] = workspace.decouple_cell(cl_coupled[bin_tag])[0]
 
         print('Done.')
-
-        import pdb; pdb.setup_trace()
 
         return cl_decoupled
 
