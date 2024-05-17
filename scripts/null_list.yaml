@@ -1,6 +1,6 @@
 dirs:
-  # root: ${ACTDIR}
-  root: './'
+  root: ${ACTDIR}
+  # root: './'
   kappa_dir: 'data/act/'
   sims_dir: 'sims/'
   kappa_mask_dir: 'data/act/masks/'
@@ -17,12 +17,13 @@ config:
   delta_ell: 300
   # delta_ell: 40
   nsims: 400
+  analysis_range: [200, 2000]
   # nsims: 4
 
 tracer:
   tracer_spin: 2
   tracer_spin_tags: ['g1', 'g2']
-  tracer_nbins: 1
+  tracer_nbins: 4
   tracer_bin_tags: ['bin1', 'bin2', 'bin3', 'bin4']
   # tracer_bin_tags: ['bin4']
   # ['bin1', 'bin2', 'bin3', 'bin4']
@@ -47,6 +48,10 @@ tracer:
   tracer_sim_maps: 'DESY3_mock_shear_maps_with_nmtCls/maps/act_corr_g1g2_map_DESY3_bin_tag_nside2048_sim_tag'
 
 nulltests:
+
+  # - name: 'cib-deproj'
+  # - name: 'tsz-deproj'
+
   # - name: 'baseline'
   #   # kappa_map: 'v_baseline_MV/stage_auto/kappa_MV_alms.fits'
   #   kappa_map: 'kappa_alm_data_act_dr6_lensing_v1_baseline.fits'
@@ -140,7 +145,7 @@ nulltests:
   - name: 'f150-f090_TT'
     kappa_map: 'f_15090_TTsub/stage_auto/coadd_4splitlensingmapTT.fits'
     kappa_mask: 'act_GAL060_mask_healpy_nside=2048.fits'
-    sim_maps: 'f150-f090_TT/f150-f090_TT_mc_bias_TT'
+    sim_maps: 'f150-f090_TT/f150-f090_TT_simlensing_TT'
     map_null: True
 
   - name: 'f150-f090_MV'
