@@ -112,6 +112,8 @@ class NullCovMat():
                     if not null_test['map_null']:
                         spectra_arr[ibin, :, isim] = (spectra[bin_tag] - baseline_cl_decoupled[bin_tag]) / cl_fid[bin_tag]
 
+            # import pdb; pdb.set_trace()
+
             self.covmat_list = {}
 
             for ibin, bin_tag in enumerate(nullspectra.tracer_config['tracer_bin_tags']):
@@ -136,33 +138,35 @@ class NullCovMat():
 
                 plt.figure(1, figsize=(2 * 4.5, 2 * 3.75))
 
+                # import pdb; pdb.set_trace()
+
                 plt.subplot(221)
                 plt.axhline(0, color='k', linestyle='dashed', alpha=0.4)
                 err_bars = np.sqrt(np.diag(self.covmat_list['bin1']))
                 plt.plot(nullspectra.ell_bins.get_effective_ells(), spectra_arr[0], color='k', alpha=0.01)
                 plt.errorbar(nullspectra.ell_bins.get_effective_ells(), data_spectra['bin1'], yerr=err_bars, c='C0')
-                plt.ylim([-2, 2])
+                plt.ylim([-2.e-9, 2.e-9])
 
                 plt.subplot(222)
                 plt.axhline(0, color='k', linestyle='dashed', alpha=0.4)
                 err_bars = np.sqrt(np.diag(self.covmat_list['bin2']))
                 plt.plot(nullspectra.ell_bins.get_effective_ells(), spectra_arr[1], color='k', alpha=0.01)
                 plt.errorbar(nullspectra.ell_bins.get_effective_ells(), data_spectra['bin2'], yerr=err_bars, c='C1')
-                plt.ylim([-2, 2])
+                plt.ylim([-2.e-9, 2.e-9])
 
                 plt.subplot(223)
                 plt.axhline(0, color='k', linestyle='dashed', alpha=0.4)
                 err_bars = np.sqrt(np.diag(self.covmat_list['bin3']))
                 plt.plot(nullspectra.ell_bins.get_effective_ells(), spectra_arr[2], color='k', alpha=0.01)
                 plt.errorbar(nullspectra.ell_bins.get_effective_ells(), data_spectra['bin3'], yerr=err_bars, c='C2')
-                plt.ylim([-2, 2])
+                plt.ylim([-2.e-9, 2.e-9])
 
                 plt.subplot(224)
                 plt.axhline(0, color='k', linestyle='dashed', alpha=0.4)
                 err_bars = np.sqrt(np.diag(self.covmat_list['bin4']))
                 plt.plot(nullspectra.ell_bins.get_effective_ells(), spectra_arr[3], color='k', alpha=0.01)
                 plt.errorbar(nullspectra.ell_bins.get_effective_ells(), data_spectra['bin4'], yerr=err_bars, c='C3')
-                plt.ylim([-2, 2])
+                plt.ylim([-2.e-9, 2.e-9])
 
                 plt.xlabel('$\ell$')
                 # if null_test['map_null']:
