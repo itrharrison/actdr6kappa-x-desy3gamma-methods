@@ -25,6 +25,9 @@ class NullSpectrum():
         self.tracer_config = ini['tracer']
         self.nulltests = ini['nulltests']
 
+        self.blind = ini['config']['blind']
+        self.analysis_range = ini['config']['analysis_range']
+
         # check if environment variable has been specified for root dir
         if self.dirs['root'].startswith('${'):
             self.dirs['root'] = os.environ.get(self.dirs['root'].lstrip('${').rstrip('}'))

@@ -24,11 +24,21 @@ class NullCovMat():
         self.nsims = ini['config']['nsims']
         self.dirs = ini['dirs']
         self.nulltests = ini['nulltests']
+        self.blind = ini['config']['blind']
+        self.analysis_range = ini['config']['analysis_range']
         self.config_fname = config_fname
 
         # check if environment variable has been specified for root dir
         if self.dirs['root'].startswith('${'):
             self.dirs['root'] = os.environ.get(self.dirs['root'].lstrip('${').rstrip('}'))
+
+    def _plot_analysis_range(self, ax, ells):
+        ax.fill_between(np.arange(ells.max()), ax.get_ylim()[0], ax.get_ylim()[1],
+                    where=(np.arange(ells.max()) > self.analysis_range[1]),
+                    color='silver', alpha=0.5)
+        ax.fill_between(np.arange(ells.max()), ax.get_ylim()[0], ax.get_ylim()[1],
+                    where=(np.arange(ells.max()) < self.analysis_range[0]),
+                    color='silver', alpha=0.5)
 
     def get_spectra_set(self, sims_cross_mode='data'):
         
@@ -90,15 +100,36 @@ class NullCovMat():
 
         for null_test in nullspectra.nulltests:
 
+            if 'transfer_function' in null_test.keys():
+                transfer_dir = self.dirs['transfer_dir']
+                transfer_name = null_test['transfer_function']
+            
+                transfer_function = np.loadtxt(os.path.join(self.dirs['root'], transfer_dir, transfer_name))
+                transfer_function = np.nan_to_num(transfer_function, nan=1.0, posinf=1., neginf=1.) # first two values are numerically not defined
+
+                transfer_function = nullspectra.ell_bins.bin_cell(transfer_function)
+
+            else:
+                transfer_function = np.ones_like(cl_fid[bin_tag])
+
+            if 'transfer_function_baseline' in null_test.keys():
+                transfer_dir = self.dirs['transfer_dir']
+                transfer_name = null_test['transfer_function']
+            
+                transfer_function_baseline = np.loadtxt(os.path.join(self.dirs['root'], transfer_dir, transfer_name))
+                transfer_function_baseline = np.nan_to_num(transfer_function_baseline, nan=1.0, posinf=1., neginf=1.) # first two values are numerically not defined
+
+                transfer_function_baseline = nullspectra.ell_bins.bin_cell(transfer_function_baseline)
+
+            else:
+                transfer_function_baseline = np.ones_like(cl_fid[bin_tag])
+
             n_tracer_bins = len(nullspectra.tracer_config['tracer_bin_tags'])
 
             sim_tags_list = np.arange(self.nsims)
 
             spectra_arr = np.zeros([n_tracer_bins, nullspectra.ell_bins.get_n_bands(), self.nsims])
 
-            if not null_test['map_null']:
-                baseline_cl_fname = os.path.join(nullspectra.dirs['root'], nullspectra.dirs['cl_output_dir'], '{}_cls.pkl'.format(null_test['baseline_name']))
-                baseline_cl_decoupled = pickle.load(open(baseline_cl_fname, 'rb'))
 
             for isim, sim_tag in enumerate(sim_tags_list):
 
@@ -107,24 +138,33 @@ class NullCovMat():
 
                 for ibin, bin_tag in enumerate(nullspectra.tracer_config['tracer_bin_tags']):
 
-                    spectra_arr[ibin, :, isim] = spectra[bin_tag]
+                    spectra_arr[ibin, :, isim] = spectra[bin_tag] / transfer_function
 
                     if not null_test['map_null']:
-                        spectra_arr[ibin, :, isim] = (spectra[bin_tag] - baseline_cl_decoupled[bin_tag]) / cl_fid[bin_tag]
+                        baseline_cl_fname = os.path.join(nullspectra.dirs['root'], nullspectra.dirs['cl_output_dir'], '{}_cls_sim_{}.pkl'.format(null_test['baseline_name'], sim_tag + 1))
+                        baseline_cl_decoupled = pickle.load(open(baseline_cl_fname, 'rb'))
+                        spectra_arr[ibin, :, isim] = (spectra[bin_tag] / transfer_function - baseline_cl_decoupled[bin_tag] / transfer_function_baseline) / cl_fid[bin_tag]
+
+                        # import pdb; pdb.set_trace()
 
             # import pdb; pdb.set_trace()
 
             self.covmat_list = {}
+            self.corrcoef_list = {}
 
             for ibin, bin_tag in enumerate(nullspectra.tracer_config['tracer_bin_tags']):
 
                 self.covmat_list[bin_tag] = np.cov(spectra_arr[ibin])
+                self.corrcoef_list[bin_tag] = np.corrcoef(spectra_arr[ibin])
 
             self.covmat_list['total'] = np.cov(spectra_arr.reshape(nullspectra.ell_bins.get_n_bands() * n_tracer_bins, self.nsims))
+            self.corrcoef_list['total'] = np.corrcoef(spectra_arr.reshape(nullspectra.ell_bins.get_n_bands() * n_tracer_bins, self.nsims))
 
             null_test_covmat_fname = os.path.join(nullspectra.dirs['root'], nullspectra.dirs['cl_output_dir'], '{}_covmat.pkl'.format(null_test['name']))
+            null_test_corrcoef_fname = os.path.join(nullspectra.dirs['root'], nullspectra.dirs['cl_output_dir'], '{}_corrcoef.pkl'.format(null_test['name']))
 
             pickle.dump(self.covmat_list, open(null_test_covmat_fname, 'wb'))
+            pickle.dump(self.corrcoef_list, open(null_test_corrcoef_fname, 'wb'))
 
             if plot_dir:
 
@@ -134,9 +174,23 @@ class NullCovMat():
 
                 null_test_cl_fname = os.path.join(nullspectra.dirs['root'], nullspectra.dirs['cl_output_dir'], '{}_cls.pkl'.format(null_test['name']))
 
-                data_spectra = pickle.load(open(null_test_cl_fname, 'rb'))
-
                 plt.figure(1, figsize=(2 * 4.5, 2 * 3.75))
+
+                if null_test['map_null']:
+                    plt.suptitle(null_test['name'])
+                    ylabel = '$C^{\kappa_{\\rm ' + null_test['name'].replace('_', '\_') + '}\gamma}_{\ell}$'
+                    ylims = [-1.e-9, 1.e-9]
+                    data_spectra = pickle.load(open(null_test_cl_fname, 'rb'))
+                else:
+                    plt.suptitle('{}$-${}'.format(null_test['name'], null_test['baseline_name']))
+                    ylabel = '($C^{\kappa_{\\rm ' + null_test['name'].replace('_', '\_') + '}\gamma}_{\ell} - C^{\kappa_{\\rm ' + null_test['baseline_name'].replace('_', '\_') + '}\gamma}_{\ell}) / C^{\kappa\gamma, {\\rm th.}}_{\ell}$'
+                    ylims = [-10, 10]
+                    baseline_cl_fname = os.path.join(nullspectra.dirs['root'], nullspectra.dirs['cl_output_dir'], '{}_cls.pkl'.format(null_test['baseline_name']))
+                    
+                    data_spectra = {}
+
+                    for ibin, bin_tag in enumerate(nullspectra.tracer_config['tracer_bin_tags']):
+                        data_spectra[bin_tag] = (pickle.load(open(null_test_cl_fname, 'rb'))[bin_tag] / transfer_function - pickle.load(open(baseline_cl_fname, 'rb'))[bin_tag] / transfer_function_baseline ) / cl_fid[bin_tag]
 
                 # import pdb; pdb.set_trace()
 
@@ -144,29 +198,57 @@ class NullCovMat():
                 plt.axhline(0, color='k', linestyle='dashed', alpha=0.4)
                 err_bars = np.sqrt(np.diag(self.covmat_list['bin1']))
                 plt.plot(nullspectra.ell_bins.get_effective_ells(), spectra_arr[0], color='k', alpha=0.01)
-                plt.errorbar(nullspectra.ell_bins.get_effective_ells(), data_spectra['bin1'], yerr=err_bars, c='C0')
-                plt.ylim([-2.e-9, 2.e-9])
+                if self.blind:
+                    plt.errorbar(nullspectra.ell_bins.get_effective_ells(), np.zeros_like(data_spectra['bin1']), yerr=err_bars, c='C0')
+                else:
+                    plt.errorbar(nullspectra.ell_bins.get_effective_ells(), data_spectra['bin1'], yerr=err_bars, c='C0')
+                plt.ylabel(ylabel)
+                plt.xlabel('$\ell$')
+                plt.ylim(ylims)
+                plt.xlim([0, nullspectra.ell_bins.get_effective_ells().max()])
+                self._plot_analysis_range(plt.gca(), nullspectra.ell_bins.get_effective_ells())
 
                 plt.subplot(222)
                 plt.axhline(0, color='k', linestyle='dashed', alpha=0.4)
                 err_bars = np.sqrt(np.diag(self.covmat_list['bin2']))
                 plt.plot(nullspectra.ell_bins.get_effective_ells(), spectra_arr[1], color='k', alpha=0.01)
-                plt.errorbar(nullspectra.ell_bins.get_effective_ells(), data_spectra['bin2'], yerr=err_bars, c='C1')
-                plt.ylim([-2.e-9, 2.e-9])
+                if self.blind:
+                    plt.errorbar(nullspectra.ell_bins.get_effective_ells(), np.zeros_like(data_spectra['bin2']), yerr=err_bars, c='C1')
+                else:
+                    plt.errorbar(nullspectra.ell_bins.get_effective_ells(), data_spectra['bin2'], yerr=err_bars, c='C1')
+                # plt.ylabel(ylabel)
+                plt.xlabel('$\ell$')
+                plt.ylim(ylims)
+                plt.xlim([0, nullspectra.ell_bins.get_effective_ells().max()])
+                self._plot_analysis_range(plt.gca(), nullspectra.ell_bins.get_effective_ells())
 
                 plt.subplot(223)
                 plt.axhline(0, color='k', linestyle='dashed', alpha=0.4)
                 err_bars = np.sqrt(np.diag(self.covmat_list['bin3']))
                 plt.plot(nullspectra.ell_bins.get_effective_ells(), spectra_arr[2], color='k', alpha=0.01)
-                plt.errorbar(nullspectra.ell_bins.get_effective_ells(), data_spectra['bin3'], yerr=err_bars, c='C2')
-                plt.ylim([-2.e-9, 2.e-9])
+                if self.blind:
+                    plt.errorbar(nullspectra.ell_bins.get_effective_ells(), np.zeros_like(data_spectra['bin3']), yerr=err_bars, c='C2')
+                else:
+                    plt.errorbar(nullspectra.ell_bins.get_effective_ells(), data_spectra['bin3'], yerr=err_bars, c='C2')
+                plt.ylabel(ylabel)
+                plt.xlabel('$\ell$')
+                plt.ylim(ylims)
+                plt.xlim([0, nullspectra.ell_bins.get_effective_ells().max()])
+                self._plot_analysis_range(plt.gca(), nullspectra.ell_bins.get_effective_ells())
 
                 plt.subplot(224)
                 plt.axhline(0, color='k', linestyle='dashed', alpha=0.4)
                 err_bars = np.sqrt(np.diag(self.covmat_list['bin4']))
                 plt.plot(nullspectra.ell_bins.get_effective_ells(), spectra_arr[3], color='k', alpha=0.01)
-                plt.errorbar(nullspectra.ell_bins.get_effective_ells(), data_spectra['bin4'], yerr=err_bars, c='C3')
-                plt.ylim([-2.e-9, 2.e-9])
+                if self.blind:
+                    plt.errorbar(nullspectra.ell_bins.get_effective_ells(), np.zeros_like(data_spectra['bin4']), yerr=err_bars, c='C3')
+                else:
+                    plt.errorbar(nullspectra.ell_bins.get_effective_ells(), data_spectra['bin4'], yerr=err_bars, c='C3')
+                # plt.ylabel(ylabel)
+                plt.xlabel('$\ell$')
+                plt.ylim(ylims)
+                plt.xlim([0, nullspectra.ell_bins.get_effective_ells().max()])
+                self._plot_analysis_range(plt.gca(), nullspectra.ell_bins.get_effective_ells())
 
                 plt.xlabel('$\ell$')
                 # if null_test['map_null']:
@@ -180,11 +262,14 @@ class NullCovMat():
                 # plt.imshow(self.covmat_list['total'], origin='lower')
 
                 # plt.subplot(133)
-                # plt.imshow(self.corrcoeff_list['total'], origin='lower')
+                # plt.imshow(self.corrcoef_list['total'], origin='lower')
 
                 plt.axhline(0.0, color='k')#, linestyle='dashed', alpha=0.4)
 
-                plt.savefig(os.path.join(plot_dir, 'covmat_{}.png'.format(null_test['name'])), dpi=300, bbox_inches='tight')
+                if null_test['map_null']:
+                    plt.savefig(os.path.join(plot_dir, 'covmat_{}.png'.format(null_test['name'])), dpi=300, bbox_inches='tight')
+                else:
+                    plt.savefig(os.path.join(plot_dir, 'covmat_{}-{}.png'.format(null_test['name'], null_test['baseline_name'])), dpi=300, bbox_inches='tight')
 
 
 if __name__ == '__main__':
@@ -193,7 +278,6 @@ if __name__ == '__main__':
 
     nullcovmats = NullCovMat(config_fname='./scripts/null_list.yaml')
 
-    # nullcovmats.make_covmat(plot_dir='./figures')
-
-    nullcovmats.get_spectra_set(sims_cross_mode='sims')
+    nullcovmats.make_covmat(plot_dir='./figures')
+    # nullcovmats.get_spectra_set(sims_cross_mode='sims')
 
