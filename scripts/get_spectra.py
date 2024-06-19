@@ -93,10 +93,11 @@ class NullSpectrum():
                 
                 if isim is not None:
                     tracer_map_fname = self.tracer_config['tracer_sim_maps'].replace('bin_tag', bin_tag).replace('sim_tag', f'{isim:05}')
+                    sims_dir = os.path.join(self.dirs['root'], self.dirs['sims_dir'])
                     if spin_tag == 'g1':
-                        tracer_map = hp.read_map(os.path.join(tracer_dir, tracer_map_fname), field=0)
+                        tracer_map = hp.read_map(os.path.join(sims_dir, tracer_map_fname), field=0)
                     elif spin_tag == 'g2':
-                        tracer_map = hp.read_map(os.path.join(tracer_dir, tracer_map_fname), field=1)
+                        tracer_map = hp.read_map(os.path.join(sims_dir, tracer_map_fname), field=1)
                 else:
                     tracer_map_fname = self.tracer_config['tracer_maps'][bin_tag][spin_tag]
                     tracer_map = hp.read_map(os.path.join(tracer_dir, tracer_map_fname))

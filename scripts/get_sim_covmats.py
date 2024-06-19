@@ -62,7 +62,7 @@ class NullCovMat():
                 null_test['kappa_field'] = nullspectra.setup_act_field(null_test, sim_map=True)
 
                 if sims_cross_mode=='sims':
-                    nullspectra.setup_tracer_fields(isim=isim)
+                    nullspectra.setup_tracer_fields(isim=isim + 1)
                 else:
                     print('!! Crossing kappa sims with tracer data... !!')
 
