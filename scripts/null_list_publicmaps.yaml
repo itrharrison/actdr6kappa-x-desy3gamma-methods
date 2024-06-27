@@ -46,7 +46,8 @@ tracer:
     bin2: 'weight_map_bin2_nside2048.fits'
     bin3: 'weight_map_bin3_nside2048.fits'
     bin4: 'weight_map_bin4_nside2048.fits'
-  tracer_sim_maps: 'DESY3_mock_shear_maps_with_nmtCls/maps/act_corr_g1g2_map_DESY3_bin_tag_nside2048_sim_tag.fits'
+  #tracer_sim_maps: 'DESY3_mock_shear_maps_with_nmtCls/maps/act_corr_g1g2_map_DESY3_bin_tag_nside2048_sim_tag.fits'
+  tracer_sim_maps: '/scratch/c.c1025819/actdr6_nulls/sims/DESY3_mock_shear_maps_with_nmtCls/maps/'
 
 nulltests:
 

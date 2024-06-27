@@ -68,7 +68,7 @@ class NullCovMat():
 
                 null_test_cl_fname = os.path.join(nullspectra.dirs['root'], nullspectra.dirs['cl_output_dir'], '{}_cls_sim_{}.pkl'.format(null_test['name'], sim_tag + 1))
 
-                null_test['kappa_map'] = null_test['sim_maps'] + '_{:d}.fits'.format(sim_tag + 1)
+                null_test['kappa_map'] = null_test['sim_maps'] + '_{:04d}.fits'.format(sim_tag + 1)
                 null_test['kappa_field'] = nullspectra.setup_act_field(null_test, sim_map=True)
 
                 if sims_cross_mode=='sims':
@@ -276,8 +276,8 @@ if __name__ == '__main__':
 
     import pickle
 
-    nullcovmats = NullCovMat(config_fname='./scripts/null_list.yaml')
+    nullcovmats = NullCovMat(config_fname='./scripts/null_list_publicmaps.yaml')
 
-    nullcovmats.make_covmat(plot_dir='./figures')
-    # nullcovmats.get_spectra_set(sims_cross_mode='sims')
+    #nullcovmats.make_covmat(plot_dir='./figures')
+    nullcovmats.get_spectra_set(sims_cross_mode='sims')
 
