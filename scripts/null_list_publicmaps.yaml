@@ -10,7 +10,7 @@ dirs:
   cl_output_dir: 'output_spectra/'
 
 config:
-  nside: 2048
+  nside: 4096
   ell_min: 100
   # ell_max: 2200
   ell_max: 4000
