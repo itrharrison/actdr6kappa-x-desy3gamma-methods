@@ -96,7 +96,8 @@ class NullSpectrum():
                 
                 if isim is not None:
                     tracer_map_fname = self.tracer_config['tracer_sim_maps'].replace('bin_tag', bin_tag).replace('sim_tag', f'{isim:05}')
-                    sims_dir = os.path.join(self.dirs['root'], self.dirs['sims_dir'])
+                    # sims_dir = os.path.join(self.dirs['root'], self.dirs['sims_dir'])
+                    sims_dir = self.dirs['root']
                     if spin_tag == 'g1':
                         tracer_map = hp.read_map(os.path.join(sims_dir, tracer_map_fname), field=0)
                     elif spin_tag == 'g2':
@@ -134,10 +135,11 @@ class NullSpectrum():
         '''
 
         print('Getting ACT field...')
-        if sim_map:
-            kappa_dir = self.dirs['sims_dir']
-        else:    
-            kappa_dir = self.dirs['kappa_dir']
+        # if sim_map:
+        #     kappa_dir = self.dirs['sims_dir']
+        # else:    
+        #     kappa_dir = self.dirs['kappa_dir']
+        kappa_dir = self.dirs['kappa_dir']
         kappa_map_fname = nulltest['kappa_map']
         kappa_mask_fname = nulltest['kappa_mask']
 
