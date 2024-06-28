@@ -215,7 +215,7 @@ class NullSpectrum():
             tracer_mask_fname = self.tracer_config['tracer_masks'][bin_tag]
             kappa_mask_fname = nulltest['kappa_mask']
 
-            workspace_fname =  os.path.join(self.dirs['workspace_dir'], '{}_{}_wsp.fits').format(tracer_mask_fname.rstrip('.fits'), kappa_mask_fname.rstrip('.fits')) # unique for each mask combination
+            workspace_fname =  os.path.join(self.dirs['workspace_dir'], '{}_{}_wsp.fits').format(tracer_mask_fname.rstrip('.fits'), kappa_mask_fname.split('/')[-1].rstrip('.fits')) # unique for each mask combination
 
             if os.path.exists(workspace_fname):
                 print(f'Reading workspace for {bin_tag} from {workspace_fname} ...')
