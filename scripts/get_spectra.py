@@ -16,6 +16,10 @@ class NullSpectrum():
             ini = yaml.safe_load(file)
 
         self.nside = ini['config']['nside']
+        if 'nside_downgrade' in ini['config']:
+            self.nside_downgrade = ini['config']['nside_downgrade']
+        else:
+            self.nside_downgrade = False
         self.ell_min = ini['config']['ell_min']
         self.ell_max = ini['config']['ell_max']
         self.delta_ell = ini['config']['delta_ell']
@@ -172,6 +176,10 @@ class NullSpectrum():
             kappa_alms = hp.almxfl(kappa_alms, transfer_function)
 
         kappa_map = hp.alm2map(np.nan_to_num(kappa_alms), nside=self.nside)
+
+        if self.nside_downgrade:
+            kappa_map = hp.pixelfunc.ud_grade(kappa_map, self.nside_downgrade)
+            kappa_mask = hp.pixelfunc.ud_grade(kappa_mask, self.nside_downgrade)
 
         kappa_field = nmt.NmtField(kappa_mask, [kappa_map * kappa_mask_weight],
                                    beam=None,

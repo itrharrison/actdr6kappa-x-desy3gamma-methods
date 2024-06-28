@@ -11,6 +11,7 @@ dirs:
 
 config:
   nside: 4096
+  nside_downgrade: 2048
   ell_min: 100
   # ell_max: 2200
   ell_max: 4000
