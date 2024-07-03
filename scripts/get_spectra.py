@@ -263,7 +263,7 @@ if __name__ == '__main__':
 
     import pickle
 
-    nullspectra = NullSpectrum(config_fname='scripts/null_list.yaml')
+    nullspectra = NullSpectrum(config_fname='scripts/null_list_publicmaps.yaml')
 
     nullspectra.setup_binning()
     nullspectra.setup_tracer_fields()
