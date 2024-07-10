@@ -178,14 +178,14 @@ class NullCovMat():
                 plt.figure(1, figsize=(2 * 4.5, 2 * 3.75))
 
                 if null_test['map_null']:
-                    plt.suptitle(null_test['name'])
-                    ylabel = '$C^{\kappa_{\\rm ' + null_test['name'].replace('_', '\_') + '}\gamma}_{\ell}$'
-                    ylims = [-1.e-9, 1.e-9]
+                    plt.suptitle(null_test['name'].split('-')[0])
+                    ylabel = '$C^{\kappa_{\\rm ' + null_test['name'].split('-')[0].replace('_', '\_') + '}\gamma}_{\ell}$'
+                    ylims = [-0.5e-9, 0.5e-9]
                     data_spectra = pickle.load(open(null_test_cl_fname, 'rb'))
                 else:
-                    plt.suptitle('{}$-${}'.format(null_test['name'], null_test['baseline_name']))
-                    ylabel = '($C^{\kappa_{\\rm ' + null_test['name'].replace('_', '\_') + '}\gamma}_{\ell} - C^{\kappa_{\\rm ' + null_test['baseline_name'].replace('_', '\_') + '}\gamma}_{\ell}) / C^{\kappa\gamma, {\\rm th.}}_{\ell}$'
-                    ylims = [-10, 10]
+                    plt.suptitle('{}$-${}'.format(null_test['name'].split('-')[0], null_test['baseline_name'].split('-')[0]))
+                    ylabel = '($C^{\kappa_{\\rm ' + null_test['name'].split('-')[0].replace('_', '\_') + '}\gamma}_{\ell} - C^{\kappa_{\\rm ' + null_test['baseline_name'].split('-')[0].replace('_', '\_') + '}\gamma}_{\ell}) / C^{\kappa\gamma, {\\rm th.}}_{\ell}$'
+                    ylims = [-5, 5]
                     baseline_cl_fname = os.path.join(nullspectra.dirs['root'], nullspectra.dirs['cl_output_dir'], '{}_cls.pkl'.format(null_test['baseline_name']))
                     
                     data_spectra = {}
@@ -196,6 +196,7 @@ class NullCovMat():
                 # import pdb; pdb.set_trace()
 
                 plt.subplot(221)
+                plt.title('Bin 1')
                 plt.axhline(0, color='k', linestyle='dashed', alpha=0.4)
                 err_bars = np.sqrt(np.diag(self.covmat_list['bin1']))
                 plt.plot(nullspectra.ell_bins.get_effective_ells(), spectra_arr[0], color='k', alpha=0.01)
@@ -210,6 +211,7 @@ class NullCovMat():
                 self._plot_analysis_range(plt.gca(), nullspectra.ell_bins.get_effective_ells())
 
                 plt.subplot(222)
+                plt.title('Bin 2')
                 plt.axhline(0, color='k', linestyle='dashed', alpha=0.4)
                 err_bars = np.sqrt(np.diag(self.covmat_list['bin2']))
                 plt.plot(nullspectra.ell_bins.get_effective_ells(), spectra_arr[1], color='k', alpha=0.01)
@@ -224,6 +226,7 @@ class NullCovMat():
                 self._plot_analysis_range(plt.gca(), nullspectra.ell_bins.get_effective_ells())
 
                 plt.subplot(223)
+                plt.title('Bin 3')
                 plt.axhline(0, color='k', linestyle='dashed', alpha=0.4)
                 err_bars = np.sqrt(np.diag(self.covmat_list['bin3']))
                 plt.plot(nullspectra.ell_bins.get_effective_ells(), spectra_arr[2], color='k', alpha=0.01)
@@ -238,6 +241,7 @@ class NullCovMat():
                 self._plot_analysis_range(plt.gca(), nullspectra.ell_bins.get_effective_ells())
 
                 plt.subplot(224)
+                plt.title('Bin 4')
                 plt.axhline(0, color='k', linestyle='dashed', alpha=0.4)
                 err_bars = np.sqrt(np.diag(self.covmat_list['bin4']))
                 plt.plot(nullspectra.ell_bins.get_effective_ells(), spectra_arr[3], color='k', alpha=0.01)
@@ -267,6 +271,8 @@ class NullCovMat():
 
                 plt.axhline(0.0, color='k')#, linestyle='dashed', alpha=0.4)
 
+                plt.subplots_adjust(hspace=0.3)
+
                 if null_test['map_null']:
                     plt.savefig(os.path.join(plot_dir, 'covmat_{}.png'.format(null_test['name'])), dpi=300, bbox_inches='tight')
                 else:
@@ -279,6 +285,6 @@ if __name__ == '__main__':
 
     nullcovmats = NullCovMat(config_fname='./scripts/null_list_publicmaps.yaml')
 
-    #nullcovmats.make_covmat(plot_dir='./figures')
-    nullcovmats.get_spectra_set(sims_cross_mode='sims')
+    nullcovmats.make_covmat(plot_dir='./figures')
+    # nullcovmats.get_spectra_set(sims_cross_mode='sims')
 
