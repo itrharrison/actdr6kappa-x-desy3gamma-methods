@@ -1,0 +1,25 @@
+debug: False
+force: False
+
+output: chains/preliminary_dr6_logTagn
+
+sampler:
+  mcmc:
+    Rminus1_cl_stop: 0.2
+    Rminus1_stop: 0.01
+    covmat: chains/ACTPlanck_H0logAomch2-s3model-s3data.covmat
+    drag: false
+    max_tries: 10000
+    oversample_power: 0.4
+    proposal_scale: 1.9
+
+theory: !defaults [ theory_camb, theory_ccl ]
+likelihood:
+  soliket.cross_correlation.ShearKappaLikelihood:
+    datapath: ./data/prelim_all_bMV_ACTDR6-kappa_DESY3-gamma_FLASK_mockdata_simCov_s1_meanCls.fits
+    use_spectra: all
+    z_nuisance_mode: deltaz
+    m_nuisance_mode: True
+    ia_mode: nla
+    ncovsims: 511
+params: !defaults [ params_cosmology_logTagn, params_ia-s3, params_nuisance ]

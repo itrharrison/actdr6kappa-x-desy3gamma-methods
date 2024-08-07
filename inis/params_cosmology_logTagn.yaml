@@ -1,0 +1,53 @@
+omch2:
+  latex: \Omega_\mathrm{c} h^2
+  prior:
+    max: 0.99
+    min: 0.005
+  ref:
+    dist: norm
+    loc: 0.12
+    scale: 0.001
+H0:
+  latex: H_0
+  prior:
+    max: 100
+    min: 40
+  ref:
+    dist: norm
+    loc: 67.7
+    scale: 5.
+HMCode_logT_AGN:
+  latex: \log(T_\mathrm{AGN})
+  prior:
+    min: 7.6
+    max: 8.7
+  ref: 7.8
+logA:
+  drop: true
+  latex: \log(10^{10} A_\mathrm{s})
+  prior:
+    max: 4.0
+    min: 1.6
+  ref:
+    dist: norm
+    loc: 3.05
+    scale: 0.001
+As:
+  value: 'lambda logA: 1e-10*np.exp(logA)'
+mnu:
+  value: 0.06
+ns:
+  latex: n_\mathrm{s}
+  value: 0.9649
+ombh2:
+  latex: \Omega_\mathrm{b} h^2
+  value: 0.0224
+omega_de:
+  latex: \Omega_\Lambda
+omegam:
+  latex: \Omega_\mathrm{m}
+omegamh2:
+  derived: 'lambda omegam, H0: omegam*(H0/100)**2'
+  latex: \Omega_\mathrm{m} h^2
+sigma8:
+  latex: \sigma_8
