@@ -4,6 +4,7 @@ force: False
 output: chains/preliminary_dr6_logTagn
 
 sampler:
+  # evaluate: null
   mcmc:
     Rminus1_cl_stop: 0.2
     Rminus1_stop: 0.01

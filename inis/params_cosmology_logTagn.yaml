@@ -3,35 +3,35 @@ omch2:
   prior:
     max: 0.99
     min: 0.005
-  ref:
-    dist: norm
-    loc: 0.12
-    scale: 0.001
+  ref: 0.12
+    # dist: norm
+    # loc: 0.12
+    # scale: 0.001
 H0:
   latex: H_0
   prior:
     max: 100
     min: 40
-  ref:
-    dist: norm
-    loc: 67.7
-    scale: 5.
+  ref: 67.7
+    # dist: norm
+    # loc: 67.7
+    # scale: 5.
 HMCode_logT_AGN:
   latex: \log(T_\mathrm{AGN})
   prior:
     min: 7.6
     max: 8.7
-  ref: 7.8
+  ref: 7.7
 logA:
   drop: true
   latex: \log(10^{10} A_\mathrm{s})
   prior:
     max: 4.0
     min: 1.6
-  ref:
-    dist: norm
-    loc: 3.05
-    scale: 0.001
+  ref: 3.05
+    # dist: norm
+    # loc: 3.05
+    # scale: 0.001
 As:
   value: 'lambda logA: 1e-10*np.exp(logA)'
 mnu:

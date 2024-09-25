@@ -69,103 +69,110 @@ nulltests:
   #   sim_maps: 'baseline/simulations/kappa_alm_sim_act_dr6_lensing_v1_baseline'
   #   map_null: True
 
-  - name: 'galcut040'
-    kappa_map: 'galcut040/kappa_alm_data_act_dr6_lensing_v1_galcut040.fits'
-    kappa_mask: 'galcut040/mask_act_dr6_lensing_v1_healpix_nside_4096_galcut040.fits'
-    # transfer_function: 'all_MV_GAL040_v2_mc_bias_MV_sims1-400'
-    sim_maps: 'galcut040/simulations/kappa_alm_sim_act_dr6_lensing_v1_galcut040'
-    map_null: False
-    baseline_name: 'baseline'
-    # transfer_function_baseline: 'all_MV_mc_bias_MV_sims1-400'
+  # - name: 'galcut040'
+  #   kappa_map: 'galcut040/kappa_alm_data_act_dr6_lensing_v1_galcut040.fits'
+  #   kappa_mask: 'galcut040/mask_act_dr6_lensing_v1_healpix_nside_4096_galcut040.fits'
+  #   # transfer_function: 'all_MV_GAL040_v2_mc_bias_MV_sims1-400'
+  #   sim_maps: 'galcut040/simulations/kappa_alm_sim_act_dr6_lensing_v1_galcut040'
+  #   map_null: False
+  #   baseline_name: 'baseline'
+  #   # transfer_function_baseline: 'all_MV_mc_bias_MV_sims1-400'
 
-  - name: 'galcut040_polonly'
-    kappa_map: 'galcut040_polonly/kappa_alm_data_act_dr6_lensing_v1_galcut040_polonly.fits'
-    kappa_mask: 'galcut040_polonly/mask_act_dr6_lensing_v1_healpix_nside_4096_galcut040_polonly.fits'
-    sim_maps: 'galcut040_polonly/simulations/kappa_alm_sim_act_dr6_lensing_v1_galcut040_polonly'
-    map_null: False
-    baseline_name: 'galcut040'
-
-  - name: 'curl'
-    kappa_map: 'curl/kappa_alm_data_act_dr6_lensing_v1_curl.fits'
-    kappa_mask: 'curl/mask_act_dr6_lensing_v1_healpix_nside_4096_curl.fits'
-    sim_maps: 'curl/simulations/kappa_alm_sim_act_dr6_lensing_v1_curl'
-    map_null: True
-
-  - name: 'polonly-baseline'
-    kappa_map: 'polonly/kappa_filter_act_dr6_lensing_v1_polonly.txt'
-    kappa_mask: 'polonly/mask_act_dr6_lensing_v1_healpix_nside_4096_polonly.fits'
-    # transfer_function: 'all_MVPOL_mc_bias_MVPOL_sims1-400'
-    sim_maps: 'polonly/simulations/kappa_alm_sim_act_dr6_lensing_v1_polonly'
+  - name: 'cibdeproj'
+    kappa_map: 'cibdeproj/kappa_alm_data_act_dr6_lensing_v1_cibdeproj.fits'
+    kappa_mask: 'cibdeproj/mask_act_dr6_lensing_v1_healpix_nside_4096_cibdeproj.fits'
+    sim_maps: 'cibdeproj/simulations/kappa_alm_sim_act_dr6_lensing_v1_cibdeproj'
     map_null: False
     baseline_name: 'baseline'
 
-  - name: 'tonly-baseline'
-    kappa_map: 'tonly/kappa_alm_data_act_dr6_lensing_v1_tonly.fits'
-    #kappa_mask: 'tonly/mask_act_dr6_lensing_v1_healpix_nside_4096_tonly.fits'
-    kappa_mask: 'baseline/mask_act_dr6_lensing_v1_healpix_nside_4096_baseline.fits'
-    # transfer_function: 'tonly/all_TT_mc_bias_TT_sims1-400'
-    sim_maps: 'tonly/simulations/kappa_alm_sim_act_dr6_lensing_v1_tonly'
-    map_null: False
-    baseline_name: 'baseline'
+  # - name: 'galcut040_polonly'
+  #   kappa_map: 'galcut040_polonly/kappa_alm_data_act_dr6_lensing_v1_galcut040_polonly.fits'
+  #   kappa_mask: 'galcut040_polonly/mask_act_dr6_lensing_v1_healpix_nside_4096_galcut040_polonly.fits'
+  #   sim_maps: 'galcut040_polonly/simulations/kappa_alm_sim_act_dr6_lensing_v1_galcut040_polonly'
+  #   map_null: False
+  #   baseline_name: 'galcut040'
 
-  - name: 'tonly-polonly'
-    kappa_map: 'tonly/kappa_alm_data_act_dr6_lensing_v1_tonly.fits'
-    #kappa_mask: 'tonly/mask_act_dr6_lensing_v1_healpix_nside_4096_tonly.fits'
-    kappa_mask: 'baseline/mask_act_dr6_lensing_v1_healpix_nside_4096_baseline.fits'
-    # transfer_function: 'tonly/all_TT_mc_bias_TT_sims1-400'
-    sim_maps: 'tonly/simulations/kappa_alm_sim_act_dr6_lensing_v1_tonly'
-    map_null: False
-    baseline_name: 'polonly-baseline'
+  # - name: 'curl'
+  #   kappa_map: 'curl/kappa_alm_data_act_dr6_lensing_v1_curl.fits'
+  #   kappa_mask: 'curl/mask_act_dr6_lensing_v1_healpix_nside_4096_curl.fits'
+  #   sim_maps: 'curl/simulations/kappa_alm_sim_act_dr6_lensing_v1_curl'
+  #   map_null: True
 
-  - name: 'f150_tonly-f090_tonly'
-    kappa_map: 'f150_tonly/kappa_alm_data_act_dr6_lensing_v1_f150_tonly.fits'
-    #kappa_mask: 'f150_tonly/mask_act_dr6_lensing_v1_healpix_nside_4096_f150_tonly.fits'
-    kappa_mask: 'baseline/mask_act_dr6_lensing_v1_healpix_nside_4096_baseline.fits'
-    # transfer_function: 'f150_TT_mc_bias_TT_sims1-400'
-    sim_maps: 'f150_tonly/simulations/kappa_alm_sim_act_dr6_lensing_v1_f150_tonly'
-    map_null: False
-    baseline_name: 'f090_tonly-baseline'
+  # - name: 'polonly-baseline'
+  #   kappa_map: 'polonly/kappa_filter_act_dr6_lensing_v1_polonly.txt'
+  #   kappa_mask: 'polonly/mask_act_dr6_lensing_v1_healpix_nside_4096_polonly.fits'
+  #   # transfer_function: 'all_MVPOL_mc_bias_MVPOL_sims1-400'
+  #   sim_maps: 'polonly/simulations/kappa_alm_sim_act_dr6_lensing_v1_polonly'
+  #   map_null: False
+  #   baseline_name: 'baseline'
 
-  - name: 'f090_tonly-baseline'
-    kappa_map: 'f090_tonly/kappa_alm_data_act_dr6_lensing_v1_f090_tonly.fits'
-    #kappa_mask: 'f090_tonly/mask_act_dr6_lensing_v1_healpix_nside_4096_f090_tonly.fits'
-    kappa_mask: 'baseline/mask_act_dr6_lensing_v1_healpix_nside_4096_baseline.fits'
-    # transfer_function: 'f090_TT_mc_bias_TT_sims1-400'
-    sim_maps: 'f090_tonly/simulations/kappa_alm_sim_act_dr6_lensing_v1_f090_tonly'
-    map_null: False
-    baseline_name: 'baseline'
+  # - name: 'tonly-baseline'
+  #   kappa_map: 'tonly/kappa_alm_data_act_dr6_lensing_v1_tonly.fits'
+  #   #kappa_mask: 'tonly/mask_act_dr6_lensing_v1_healpix_nside_4096_tonly.fits'
+  #   kappa_mask: 'baseline/mask_act_dr6_lensing_v1_healpix_nside_4096_baseline.fits'
+  #   # transfer_function: 'tonly/all_TT_mc_bias_TT_sims1-400'
+  #   sim_maps: 'tonly/simulations/kappa_alm_sim_act_dr6_lensing_v1_tonly'
+  #   map_null: False
+  #   baseline_name: 'baseline'
 
-  - name: 'f150-f090'
-    kappa_map: 'f150/kappa_alm_data_act_dr6_lensing_v1_f150.fits'
-    #kappa_mask: 'f150/mask_act_dr6_lensing_v1_healpix_nside_4096_f150.fits'
-    kappa_mask: 'baseline/mask_act_dr6_lensing_v1_healpix_nside_4096_baseline.fits'
-    # transfer_function: 'f150_MV_mc_bias_MV_sims1-400'
-    sim_maps: 'f150/simulations/kappa_alm_sim_act_dr6_lensing_v1_f150'
-    map_null: False
-    baseline_name: 'f090-baseline'
+  # - name: 'tonly-polonly'
+  #   kappa_map: 'tonly/kappa_alm_data_act_dr6_lensing_v1_tonly.fits'
+  #   #kappa_mask: 'tonly/mask_act_dr6_lensing_v1_healpix_nside_4096_tonly.fits'
+  #   kappa_mask: 'baseline/mask_act_dr6_lensing_v1_healpix_nside_4096_baseline.fits'
+  #   # transfer_function: 'tonly/all_TT_mc_bias_TT_sims1-400'
+  #   sim_maps: 'tonly/simulations/kappa_alm_sim_act_dr6_lensing_v1_tonly'
+  #   map_null: False
+  #   baseline_name: 'polonly-baseline'
 
-  - name: 'f090-baseline'
-    kappa_map: 'f090/kappa_alm_data_act_dr6_lensing_v1_f090.fits'
-    #kappa_mask: 'f090/mask_act_dr6_lensing_v1_healpix_nside_4096_f090.fits'
-    kappa_mask: 'baseline/mask_act_dr6_lensing_v1_healpix_nside_4096_baseline.fits'
-    # transfer_function: 'f090_MV_mc_bias_MV_sims1-400'
-    sim_maps: 'f090/simulations/kappa_alm_sim_act_dr6_lensing_v1_f090'
-    map_null: False
-    baseline_name: 'baseline'
+  # - name: 'f150_tonly-f090_tonly'
+  #   kappa_map: 'f150_tonly/kappa_alm_data_act_dr6_lensing_v1_f150_tonly.fits'
+  #   #kappa_mask: 'f150_tonly/mask_act_dr6_lensing_v1_healpix_nside_4096_f150_tonly.fits'
+  #   kappa_mask: 'baseline/mask_act_dr6_lensing_v1_healpix_nside_4096_baseline.fits'
+  #   # transfer_function: 'f150_TT_mc_bias_TT_sims1-400'
+  #   sim_maps: 'f150_tonly/simulations/kappa_alm_sim_act_dr6_lensing_v1_f150_tonly'
+  #   map_null: False
+  #   baseline_name: 'f090_tonly-baseline'
 
-  - name: 'diff_f150_f090_tonly'
-    kappa_map: 'diff_f150_f090_tonly/kappa_alm_data_act_dr6_lensing_v1_diff_f150_f090_tonly.fits'
-    kappa_mask: 'baseline/mask_act_dr6_lensing_v1_healpix_nside_4096_baseline.fits'
-    #kappa_mask: 'diff_f150_f090_tonly/mask_act_dr6_lensing_v1_healpix_nside_4096_diff_f150_f090_tonly.fits'
-    sim_maps: 'diff_f150_f090_tonly/simulations/kappa_alm_sim_act_dr6_lensing_v1_diff_f150_f090_tonly'
-    map_null: True
+  # - name: 'f090_tonly-baseline'
+  #   kappa_map: 'f090_tonly/kappa_alm_data_act_dr6_lensing_v1_f090_tonly.fits'
+  #   #kappa_mask: 'f090_tonly/mask_act_dr6_lensing_v1_healpix_nside_4096_f090_tonly.fits'
+  #   kappa_mask: 'baseline/mask_act_dr6_lensing_v1_healpix_nside_4096_baseline.fits'
+  #   # transfer_function: 'f090_TT_mc_bias_TT_sims1-400'
+  #   sim_maps: 'f090_tonly/simulations/kappa_alm_sim_act_dr6_lensing_v1_f090_tonly'
+  #   map_null: False
+  #   baseline_name: 'baseline'
 
-  - name: 'diff_f150_f090'
-    kappa_map: 'diff_f150_f090/kappa_alm_data_act_dr6_lensing_v1_diff_f150_f090.fits'
-    kappa_mask: 'baseline/mask_act_dr6_lensing_v1_healpix_nside_4096_baseline.fits'
-    #kappa_mask: 'diff_f150_f090/mask_act_dr6_lensing_v1_healpix_nside_4096_diff_f150_f090.fits'
-    sim_maps: 'diff_f150_f090/simulations/kappa_alm_sim_act_dr6_lensing_v1_diff_f150_f090'
-    map_null: True
+  # - name: 'f150-f090'
+  #   kappa_map: 'f150/kappa_alm_data_act_dr6_lensing_v1_f150.fits'
+  #   #kappa_mask: 'f150/mask_act_dr6_lensing_v1_healpix_nside_4096_f150.fits'
+  #   kappa_mask: 'baseline/mask_act_dr6_lensing_v1_healpix_nside_4096_baseline.fits'
+  #   # transfer_function: 'f150_MV_mc_bias_MV_sims1-400'
+  #   sim_maps: 'f150/simulations/kappa_alm_sim_act_dr6_lensing_v1_f150'
+  #   map_null: False
+  #   baseline_name: 'f090-baseline'
+
+  # - name: 'f090-baseline'
+  #   kappa_map: 'f090/kappa_alm_data_act_dr6_lensing_v1_f090.fits'
+  #   #kappa_mask: 'f090/mask_act_dr6_lensing_v1_healpix_nside_4096_f090.fits'
+  #   kappa_mask: 'baseline/mask_act_dr6_lensing_v1_healpix_nside_4096_baseline.fits'
+  #   # transfer_function: 'f090_MV_mc_bias_MV_sims1-400'
+  #   sim_maps: 'f090/simulations/kappa_alm_sim_act_dr6_lensing_v1_f090'
+  #   map_null: False
+  #   baseline_name: 'baseline'
+
+  # - name: 'diff_f150_f090_tonly'
+  #   kappa_map: 'diff_f150_f090_tonly/kappa_alm_data_act_dr6_lensing_v1_diff_f150_f090_tonly.fits'
+  #   kappa_mask: 'baseline/mask_act_dr6_lensing_v1_healpix_nside_4096_baseline.fits'
+  #   #kappa_mask: 'diff_f150_f090_tonly/mask_act_dr6_lensing_v1_healpix_nside_4096_diff_f150_f090_tonly.fits'
+  #   sim_maps: 'diff_f150_f090_tonly/simulations/kappa_alm_sim_act_dr6_lensing_v1_diff_f150_f090_tonly'
+  #   map_null: True
+
+  # - name: 'diff_f150_f090'
+  #   kappa_map: 'diff_f150_f090/kappa_alm_data_act_dr6_lensing_v1_diff_f150_f090.fits'
+  #   kappa_mask: 'baseline/mask_act_dr6_lensing_v1_healpix_nside_4096_baseline.fits'
+  #   #kappa_mask: 'diff_f150_f090/mask_act_dr6_lensing_v1_healpix_nside_4096_diff_f150_f090.fits'
+  #   sim_maps: 'diff_f150_f090/simulations/kappa_alm_sim_act_dr6_lensing_v1_diff_f150_f090'
+  #   map_null: True
 
   # - name: 'f150-f090_MV_40_mask'
   #   kappa_map: 'f_15090_MVsub/stage_auto/coadd_4splitlensingmapMV.fits'
