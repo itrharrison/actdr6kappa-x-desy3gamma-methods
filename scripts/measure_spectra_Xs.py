@@ -125,14 +125,14 @@ print('Measuring...')
 # cl_kappagamma = nmt.workspaces.compute_full_master(kappa_field, gamma_field, binning)
 # cl_kappagamma_moi = compute_master(kappa_field_moi, gamma_field_moi, wsp_moi)
 
-cl_kappastellar = compute_master([kappa_field, stellar_field, wsp_s1s1])
-cl_kappaext = compute_master([kappa_field, ext_field, wsp_s1s1])
+cl_kappastellar = compute_master(kappa_field, stellar_field, wsp_s1s1)
+cl_kappaext = compute_master(kappa_field, ext_field, wsp_s1s1)
 
-cl_gammastellar = compute_master([stellar_field, gamma_field, wsp_s1s2])
-cl_gammaext = compute_master([ext_field, gamma_field, wsp_s1s2])
+cl_gammastellar = compute_master(stellar_field, gamma_field, wsp_s1s2)
+cl_gammaext = compute_master(ext_field, gamma_field, wsp_s1s2)
 
-cl_stellarstellar = compute_master([stellar_field, stellar_field, wsp_s1s1])
-cl_extext = compute_master([ext_field, ext_field, wsp_s1s1])
+cl_stellarstellar = compute_master(stellar_field, stellar_field, wsp_s1s1)
+cl_extext = compute_master(ext_field, ext_field, wsp_s1s1)
 
 print('Done.')
 
@@ -145,6 +145,6 @@ outobj = {
         'cl_extext' : cl_extext
         }
 
-outobj = './data/Xs_spectra.pkl'
+outfile = './data/Xs_spectra.pkl'
 
 pickle.dump(outobj, open(outfile, 'wb'))

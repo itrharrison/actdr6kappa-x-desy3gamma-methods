@@ -285,6 +285,6 @@ if __name__ == '__main__':
 
     nullcovmats = NullCovMat(config_fname='./scripts/null_list_publicmaps.yaml')
 
-    nullcovmats.make_covmat(plot_dir='./figures')
-    # nullcovmats.get_spectra_set(sims_cross_mode='sims')
+    # nullcovmats.make_covmat(plot_dir='./figures')
+    nullcovmats.get_spectra_set(sims_cross_mode='sims')
 
