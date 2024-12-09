@@ -2,6 +2,7 @@ import os
 import math
 import numpy as np
 import yaml
+import pickle
 
 import sacc
 import healpy as hp
@@ -132,3 +133,16 @@ cl_stellarstellar = compute_master([stellar_field, stellar_field, wsp_s1s1])
 cl_extext = compute_master([ext_field, ext_field, wsp_s1s1])
 
 print('Done.')
+
+outobj = {
+        'cl_kappastellar' : cl_kappastellar,
+        'cl_kappaext' : cl_kappaext,
+        'cl_gammastellar': cl_gammastellar,
+        'cl_gammaext' : cl_gammaext,
+        'cl_stellarstellar' : cl_stellarstellar,
+        'cl_extext' : cl_extext
+        }
+
+outobj = './data/Xs_spectra.pkl'
+
+pickle.dump(outobj, open(outfile, 'wb'))
