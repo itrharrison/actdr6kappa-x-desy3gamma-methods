@@ -23,6 +23,8 @@ def compute_master(f_a, f_b, wsp):
     cl_decoupled = wsp.decouple_cell(cl_coupled)
     return cl_decoupled
 
+data_dir = '/scratch/c.c1025819/actdr6_nulls/'
+
 s = sacc.Sacc()
 s_data = s.load_fits('../actdr4kappa-x-desy3gamma-data/data/UNBLINDED_ACTPlanck_tSZfree_ACTDR4-kappa_DESY3-gamma_data_simCov.fits')
 ell_data, cl_data = s_data.get_ell_cl(tracer1='gs_des_bin4', tracer2='ck_act', data_type='cl_20')
@@ -64,20 +66,20 @@ binning = nmt.NmtBin(nside=nside, bpws=bpws, ells=ells, weights=weights, lmax=el
 kappa_alms = hp.read_alm('data/act/kappa_alm_data_act_dr6_lensing_v1_baseline.fits').astype('complex128')
 kappa_map = hp.alm2map(np.nan_to_num(kappa_alms), nside=nside)
 
-g1_map = hp.read_map('data/des/DESY3_cat_e1e2_maps/DESY3_meansub_Rcorrected_g1_map_bin4_nside2048.fits')
-g2_map = hp.read_map('data/des/DESY3_cat_e1e2_maps/DESY3_meansub_Rcorrected_g2_map_bin4_nside2048.fits')
+g1_map = hp.read_map(os.path.join(data_dir, 'data/des/DESY3_cat_e1e2_maps/DESY3_meansub_Rcorrected_g1_map_bin4_nside2048.fits'))
+g2_map = hp.read_map(os.path.join(data_dir, 'data/des/DESY3_cat_e1e2_maps/DESY3_meansub_Rcorrected_g2_map_bin4_nside2048.fits'))
 mod_g_map = np.sqrt(g1_map**2. + g2_map**2.)
 
-stellar_map_4096 = hp.read_map('data/psf_stellar_density_fracdet_binned_1024_nside_4096_cel.fits.gz')
+stellar_map_4096 = hp.read_map(os.path.join(data_dir, 'data/psf_stellar_density_fracdet_binned_1024_nside_4096_cel.fits.gz'))
 stellar_map = hp.ud_grade(stellar_map_4096, nside)
 
-ext_map_4096 = hp.read_map('data/ebv_sfd98_fullres_nside_4096_nest_equatorial.fits.gz')
+ext_map_4096 = hp.read_map(os.path.join(data_dir, 'data/ebv_sfd98_fullres_nside_4096_nest_equatorial.fits.gz'))
 ext_map = hp.ud_grade(stellar_map_4096, nside)
 
 mask_pwr = 2
 
-kappa_mask = hp.read_map('data/act/masks/act_GAL060_mask_healpy_nside=2048.fits')
-kappa_mask_dr4 = hp.read_map('data/act/hp_nside2048_lmax6000_act_dr4.01_s14s15_D56_lensing_mask.fits')
+kappa_mask = hp.read_map(os.path.join(data_dir, 'data/act/masks/act_GAL060_mask_healpy_nside=2048.fits'))
+kappa_mask_dr4 = hp.read_map(os.path.join(data_dir, 'data/act/hp_nside2048_lmax6000_act_dr4.01_s14s15_D56_lensing_mask.fits'))
 kappa_mask = np.where(kappa_mask > 1, 1, kappa_mask)
 kappa_mask = np.where(kappa_mask < 1e-2, 0, kappa_mask)
 
@@ -88,7 +90,7 @@ kappa_mask = np.where(kappa_mask < 1e-2, 0, kappa_mask)
 
 kappa_mask = kappa_mask**mask_pwr
 
-gamma_mask = hp.read_map('data/des/DESY3_blind_cat_e1e2_maps/weight_map_bin4_nside2048.fits')
+gamma_mask = hp.read_map(os.path.join(data_dir, 'data/des/DESY3_blind_cat_e1e2_maps/weight_map_bin4_nside2048.fits'))
 # gamma_mask = np.where(gamma_mask > 1, 1, gamma_mask)
 # gamma_mask = np.where(gamma_mask < 1e-2, 0, gamma_mask)
 
