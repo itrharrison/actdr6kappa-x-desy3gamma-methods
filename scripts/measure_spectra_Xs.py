@@ -78,8 +78,8 @@ ext_map = hp.ud_grade(stellar_map_4096, nside)
 
 mask_pwr = 2
 
-kappa_mask = hp.read_map(os.path.join(data_dir, 'data/act/masks/act_GAL060_mask_healpy_nside=2048.fits'))
-kappa_mask_dr4 = hp.read_map(os.path.join(data_dir, 'data/act/hp_nside2048_lmax6000_act_dr4.01_s14s15_D56_lensing_mask.fits'))
+kappa_mask = hp.read_map(os.path.join(data_dir, 'data/act/act_GAL060_mask_healpy_nside=2048.fits'))
+# kappa_mask_dr4 = hp.read_map(os.path.join(data_dir, 'data/act/hp_nside2048_lmax6000_act_dr4.01_s14s15_D56_lensing_mask.fits'))
 kappa_mask = np.where(kappa_mask > 1, 1, kappa_mask)
 kappa_mask = np.where(kappa_mask < 1e-2, 0, kappa_mask)
 
