@@ -72,9 +72,10 @@ mod_g_map = np.sqrt(g1_map**2. + g2_map**2.)
 
 stellar_map_4096 = hp.read_map(os.path.join(data_dir, 'data/psf_stellar_density_fracdet_binned_1024_nside_4096_cel.fits.gz'))
 stellar_map = hp.ud_grade(stellar_map_4096, nside)
+stellar_map[stellar_map<0] = 0.0
 
 ext_map_4096 = hp.read_map(os.path.join(data_dir, 'data/ebv_sfd98_fullres_nside_4096_nest_equatorial.fits.gz'))
-ext_map = hp.ud_grade(stellar_map_4096, nside)
+ext_map = hp.ud_grade(ext_map_4096, nside)
 
 mask_pwr = 2
 
