@@ -66,10 +66,6 @@ binning = nmt.NmtBin(nside=nside, bpws=bpws, ells=ells, weights=weights, lmax=el
 kappa_alms = hp.read_alm('data/act/kappa_alm_data_act_dr6_lensing_v1_baseline.fits').astype('complex128')
 kappa_map = hp.alm2map(np.nan_to_num(kappa_alms), nside=nside)
 
-g1_map = hp.read_map(os.path.join(data_dir, 'data/des/DESY3_cat_e1e2_maps/DESY3_meansub_Rcorrected_g1_map_bin4_nside2048.fits'))
-g2_map = hp.read_map(os.path.join(data_dir, 'data/des/DESY3_cat_e1e2_maps/DESY3_meansub_Rcorrected_g2_map_bin4_nside2048.fits'))
-mod_g_map = np.sqrt(g1_map**2. + g2_map**2.)
-
 stellar_map_4096 = hp.read_map(os.path.join(data_dir, 'data/psf_stellar_density_fracdet_binned_1024_nside_4096_cel.fits.gz'))
 stellar_map = hp.ud_grade(stellar_map_4096, nside)
 stellar_map[stellar_map<0] = 0.0
@@ -91,61 +87,67 @@ kappa_mask = np.where(kappa_mask < 1e-2, 0, kappa_mask)
 
 kappa_mask = kappa_mask**mask_pwr
 
-gamma_mask = hp.read_map(os.path.join(data_dir, 'data/des/DESY3_blind_cat_e1e2_maps/weight_map_bin4_nside2048.fits'))
-# gamma_mask = np.where(gamma_mask > 1, 1, gamma_mask)
-# gamma_mask = np.where(gamma_mask < 1e-2, 0, gamma_mask)
+for ibin in np.arange(1,5):
+    g1_map = hp.read_map(os.path.join(data_dir, f'data/des/DESY3_cat_e1e2_maps/DESY3_meansub_Rcorrected_g1_map_bin{ibin}_nside2048.fits'))
+    g2_map = hp.read_map(os.path.join(data_dir, f'data/des/DESY3_cat_e1e2_maps/DESY3_meansub_Rcorrected_g2_map_bin{ibin}_nside2048.fits'))
+    mod_g_map = np.sqrt(g1_map**2. + g2_map**2.)
 
-comb_mask = kappa_mask * gamma_mask
+    gamma_mask = hp.read_map(os.path.join(data_dir, f'data/des/DESY3_blind_cat_e1e2_maps/weight_map_bin{ibin}_nside2048.fits'))
+    # gamma_mask = np.where(gamma_mask > 1, 1, gamma_mask)
+    # gamma_mask = np.where(gamma_mask < 1e-2, 0, gamma_mask)
 
-print('Done.')
+    comb_mask = kappa_mask * gamma_mask
 
-wsp_s1s2 = nmt.NmtWorkspace()
-wsp_s1s1 = nmt.NmtWorkspace()
-# wsp_moi = nmt.NmtWorkspace()
+    print('Done.')
 
-print('Fields...')
-# kappa_field_moi = nmt.NmtField(kappa_mask, [kappa_map], spin=0, masked_on_input=True)#, beam=None, masked_on_input=True)
-# gamma_field_moi = nmt.NmtField(gamma_mask, [g1_map, g2_map], spin=2, masked_on_input=True)#, purify_b=False, beam=None)
-kappa_field = nmt.NmtField(kappa_mask, [kappa_map], beam=None, masked_on_input=True)#, beam=None, masked_on_input=False)
-gamma_field = nmt.NmtField(gamma_mask, [-1.0 * g1_map, g2_map], purify_b=False, beam=None)#, purify_b=False, beam=None)
-stellar_field = nmt.NmtField(gamma_mask, [stellar_map], beam=None, masked_on_input=True)#, purify_b=False, beam=None)
-ext_field = nmt.NmtField(gamma_mask, [ext_map], beam=None, masked_on_input=True)#, purify_b=False, beam=None)
-print('Done.')
+    wsp_s1s2 = nmt.NmtWorkspace()
+    wsp_s1s1 = nmt.NmtWorkspace()
+    # wsp_moi = nmt.NmtWorkspace()
 
-print('Coupling...')
-wsp_s1s2.compute_coupling_matrix(kappa_field, gamma_field, binning)
-wsp_s1s1.compute_coupling_matrix(kappa_field, stellar_field, binning)
-# wsp_moi.compute_coupling_matrix(kappa_field_moi, gamma_field_moi, binning)
+    print('Fields...')
+    # kappa_field_moi = nmt.NmtField(kappa_mask, [kappa_map], spin=0, masked_on_input=True)#, beam=None, masked_on_input=True)
+    # gamma_field_moi = nmt.NmtField(gamma_mask, [g1_map, g2_map], spin=2, masked_on_input=True)#, purify_b=False, beam=None)
+    kappa_field = nmt.NmtField(kappa_mask, [kappa_map], beam=None, masked_on_input=True)#, beam=None, masked_on_input=False)
+    gamma_field = nmt.NmtField(gamma_mask, [-1.0 * g1_map, g2_map], purify_b=False, beam=None)#, purify_b=False, beam=None)
+    stellar_field = nmt.NmtField(gamma_mask, [stellar_map], beam=None, masked_on_input=True)#, purify_b=False, beam=None)
+    ext_field = nmt.NmtField(gamma_mask, [ext_map], beam=None, masked_on_input=True)#, purify_b=False, beam=None)
+    print('Done.')
 
-print('Done.')
+    print('Coupling...')
+    wsp_s1s2.compute_coupling_matrix(kappa_field, gamma_field, binning)
+    wsp_s1s1.compute_coupling_matrix(kappa_field, stellar_field, binning)
+    # wsp_moi.compute_coupling_matrix(kappa_field_moi, gamma_field_moi, binning)
 
-print('Measuring...')
-# cl_kappagamma = compute_master(kappa_field, gamma_field, wsp)
-# cl_kappagamma_ana = hp.anafast([kappa_map * comb_mask, g1_map * comb_mask, g2_map * comb_mask])
-# cl_kappagamma_ana = binning.bin_cell(cl_kappagamma_ana[3,:2201])
-# cl_kappagamma = nmt.workspaces.compute_full_master(kappa_field, gamma_field, binning)
-# cl_kappagamma_moi = compute_master(kappa_field_moi, gamma_field_moi, wsp_moi)
+    print('Done.')
 
-cl_kappastellar = compute_master(kappa_field, stellar_field, wsp_s1s1)
-cl_kappaext = compute_master(kappa_field, ext_field, wsp_s1s1)
+    print('Measuring...')
+    # cl_kappagamma = compute_master(kappa_field, gamma_field, wsp)
+    # cl_kappagamma_ana = hp.anafast([kappa_map * comb_mask, g1_map * comb_mask, g2_map * comb_mask])
+    # cl_kappagamma_ana = binning.bin_cell(cl_kappagamma_ana[3,:2201])
+    # cl_kappagamma = nmt.workspaces.compute_full_master(kappa_field, gamma_field, binning)
+    # cl_kappagamma_moi = compute_master(kappa_field_moi, gamma_field_moi, wsp_moi)
 
-cl_gammastellar = compute_master(stellar_field, gamma_field, wsp_s1s2)
-cl_gammaext = compute_master(ext_field, gamma_field, wsp_s1s2)
+    cl_kappastellar = compute_master(kappa_field, stellar_field, wsp_s1s1)
+    cl_kappaext = compute_master(kappa_field, ext_field, wsp_s1s1)
 
-cl_stellarstellar = compute_master(stellar_field, stellar_field, wsp_s1s1)
-cl_extext = compute_master(ext_field, ext_field, wsp_s1s1)
+    cl_gammastellar = compute_master(stellar_field, gamma_field, wsp_s1s2)
+    cl_gammaext = compute_master(ext_field, gamma_field, wsp_s1s2)
 
-print('Done.')
+    cl_stellarstellar = compute_master(stellar_field, stellar_field, wsp_s1s1)
+    cl_extext = compute_master(ext_field, ext_field, wsp_s1s1)
 
-outobj = {
-        'cl_kappastellar' : cl_kappastellar,
-        'cl_kappaext' : cl_kappaext,
-        'cl_gammastellar': cl_gammastellar,
-        'cl_gammaext' : cl_gammaext,
-        'cl_stellarstellar' : cl_stellarstellar,
-        'cl_extext' : cl_extext
-        }
+    print('Done.')
 
-outfile = './data/Xs_spectra.pkl'
+    outobj = {
+            'ell' : binning.get_effective_ells(),
+            'cl_kappastellar' : cl_kappastellar,
+            'cl_kappaext' : cl_kappaext,
+            'cl_gammastellar': cl_gammastellar,
+            'cl_gammaext' : cl_gammaext,
+            'cl_stellarstellar' : cl_stellarstellar,
+            'cl_extext' : cl_extext
+            }
 
-pickle.dump(outobj, open(outfile, 'wb'))
+    outfile = f'./data/Xs_spectra_bin{ibin}.pkl'
+
+    pickle.dump(outobj, open(outfile, 'wb'))
