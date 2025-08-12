@@ -23,7 +23,8 @@ def compute_master(f_a, f_b, wsp):
     cl_decoupled = wsp.decouple_cell(cl_coupled)
     return cl_decoupled
 
-data_dir = '/scratch/c.c1025819/actdr6_nulls/'
+# data_dir = '/scratch/c.c1025819/actdr6_nulls/'
+data_dir = './'
 
 s = sacc.Sacc()
 s_data = s.load_fits('../actdr4kappa-x-desy3gamma-data/data/UNBLINDED_ACTPlanck_tSZfree_ACTDR4-kappa_DESY3-gamma_data_simCov.fits')
@@ -31,11 +32,12 @@ ell_data, cl_data = s_data.get_ell_cl(tracer1='gs_des_bin4', tracer2='ck_act', d
 bpw = s_data.get_bandpower_windows([18, 19, 20, 21, 22, 23])
 
 nside = 2048
+npix = hp.nside2npix(nside)
 # binning = nmt.NmtBin.from_nside_linear(nside, 4)
 # binning = nmt.NmtBin.from_lmax_linear(1900, 300)
 # binning = nmt.NmtBin(nside=nside, bpws=bpw.values, ells=bpw.values, weights=bpw.weight, lmax=1900)
 
-elmax = 2200
+elmax = 4000
 mf_lmin = 100
 delta_l = 300
 
@@ -59,15 +61,21 @@ weights = np.zeros_like(ells, dtype = 'float64')
 
 for i in np.arange(0, nbins, 1):
     bpws[ledges[i]:ledges[i+1]] = i
-    weights[ledges[i]:ledges[i+1]] = 1.
+    # weights[ledges[i]:ledges[i+1]] = 1.
+    weights[ledges[i]:ledges[i+1]] = np.arange(ledges[i], ledges[i+1], 1)**2
 
-binning = nmt.NmtBin(nside=nside, bpws=bpws, ells=ells, weights=weights, lmax=elmax)
+# binning = nmt.NmtBin(nside=nside, bpws=bpws, ells=ells, weights=weights, lmax=elmax)
 
 # kappa_alms = hp.read_alm('data/act/kappa_alm_data_act_dr6_lensing_v1_baseline.fits').astype('complex128')
 # kappa_map = hp.alm2map(np.nan_to_num(kappa_alms), nside=nside)
 
-kappa_map = pixell.enmap.read_map(os.path.join(data_dir, 'data/act_planck_dr4.01_s14s15_D56_lensing_kappa_baseline.fits'))
-kappa_map =  reproject.healpix_from_enmap(kappa_map, lmax=8000, nside=nside)
+binning = nmt.NmtBin(bpws=bpws, ells=ells, weights=weights, lmax=elmax)
+# binning = nmt.NmtBin(nside=nside, bpws=bpws, ells=ells, weights=weights, lmax=elmax)
+
+# kappa_map = enmap.read_map(os.path.join(data_dir, 'data/act_planck_dr4.01_s14s15_D56_lensing_kappa_baseline.fits'))
+kappa_map = hp.read_map(os.path.join(data_dir, "data/act/hp_nside%d_lmax6000_act_dr4.01_s14s15_D56_lensing_kappa.fits"%(nside)))
+# kappa_map =  reproject.healpix_from_enmap(kappa_map, lmax=8000, nside=nside)
+# kappa = kappa*np.mean(d56_lens_mask**2)
 
 stellar_map_4096 = hp.read_map(os.path.join(data_dir, 'data/psf_stellar_density_fracdet_binned_1024_nside_4096_cel.fits.gz'))
 stellar_map = hp.ud_grade(stellar_map_4096, nside)
@@ -78,28 +86,38 @@ ext_map = hp.ud_grade(ext_map_4096, nside)
 
 mask_pwr = 2
 
-kappa_mask = hp.read_map(os.path.join(data_dir, 'data/act/act_GAL060_mask_healpy_nside=2048.fits'))
+# kappa_mask = hp.read_map(os.path.join(data_dir, 'data/act/masks/act_GAL060_mask_healpy_nside=2048.fits'))
 # kappa_mask_dr4 = hp.read_map(os.path.join(data_dir, 'data/act/hp_nside2048_lmax6000_act_dr4.01_s14s15_D56_lensing_mask.fits'))
+kappa_mask = hp.read_map(os.path.join(data_dir, 'data/act/hp_nside2048_lmax6000_act_dr4.01_s14s15_D56_lensing_mask.fits'))
 kappa_mask = np.where(kappa_mask > 1, 1, kappa_mask)
 kappa_mask = np.where(kappa_mask < 1e-2, 0, kappa_mask)
 
 # kappa_map_weight = np.mean(kappa_mask**2.)
-# kappa_map_weight_dr4 =  0.5709974
+kappa_map_weight_dr4 =  0.5709974
 # kappa_map_weight = 0.12760189732901422
 # kappa_map_weight = 0.06225266366704071
 
 kappa_mask = kappa_mask**mask_pwr
+
+# kappa_map = kappa_map * np.mean(kappa_mask)
+
+comb_mask = hp.read_map('./data/combined_mask.fits')
+
+kappa_field = nmt.NmtField(kappa_mask, [kappa_map * kappa_map_weight_dr4], beam=None, masked_on_input=True, lmax=elmax)#, beam=None, masked_on_input=False)
+stellar_field = nmt.NmtField(comb_mask, [stellar_map], beam=None, masked_on_input=False, lmax=elmax)#, purify_b=False, beam=None)
+ext_field = nmt.NmtField(comb_mask, [ext_map], beam=None, masked_on_input=False, lmax=elmax)#, purify_b=False, beam=None)
 
 for ibin in np.arange(1,5):
     g1_map = hp.read_map(os.path.join(data_dir, f'data/des/DESY3_cat_e1e2_maps/DESY3_meansub_Rcorrected_g1_map_bin{ibin}_nside2048.fits'))
     g2_map = hp.read_map(os.path.join(data_dir, f'data/des/DESY3_cat_e1e2_maps/DESY3_meansub_Rcorrected_g2_map_bin{ibin}_nside2048.fits'))
     mod_g_map = np.sqrt(g1_map**2. + g2_map**2.)
 
-    gamma_mask = hp.read_map(os.path.join(data_dir, f'data/des/DESY3_blind_cat_e1e2_maps/weight_map_bin{ibin}_nside2048.fits'))
+    wt_map = hp.read_map(os.path.join(data_dir, f'data/des/DESY3_blind_cat_e1e2_maps/weight_map_bin{ibin}_nside2048.fits'))
+    gamma_mask = np.where(wt_map == hp.UNSEEN, 0, wt_map)*comb_mask
     # gamma_mask = np.where(gamma_mask > 1, 1, gamma_mask)
     # gamma_mask = np.where(gamma_mask < 1e-2, 0, gamma_mask)
 
-    comb_mask = kappa_mask * gamma_mask
+    # comb_mask = kappa_mask * gamma_mask
 
     print('Done.')
 
@@ -110,16 +128,15 @@ for ibin in np.arange(1,5):
     print('Fields...')
     # kappa_field_moi = nmt.NmtField(kappa_mask, [kappa_map], spin=0, masked_on_input=True)#, beam=None, masked_on_input=True)
     # gamma_field_moi = nmt.NmtField(gamma_mask, [g1_map, g2_map], spin=2, masked_on_input=True)#, purify_b=False, beam=None)
-    kappa_field = nmt.NmtField(kappa_mask, [kappa_map], beam=None, masked_on_input=True)#, beam=None, masked_on_input=False)
-    gamma_field = nmt.NmtField(gamma_mask, [-1.0 * g1_map, g2_map], purify_b=False, beam=None)#, purify_b=False, beam=None)
-    stellar_field = nmt.NmtField(gamma_mask, [stellar_map], beam=None, masked_on_input=True)#, purify_b=False, beam=None)
-    ext_field = nmt.NmtField(gamma_mask, [ext_map], beam=None, masked_on_input=True)#, purify_b=False, beam=None)
+    gamma_field = nmt.NmtField(gamma_mask, [-1.0 * g1_map, g2_map], purify_b=False, beam=None, lmax=elmax)#, purify_b=False, beam=None)
     print('Done.')
 
     print('Coupling...')
     wsp_s1s2.compute_coupling_matrix(kappa_field, gamma_field, binning)
     wsp_s1s1.compute_coupling_matrix(kappa_field, stellar_field, binning)
     # wsp_moi.compute_coupling_matrix(kappa_field_moi, gamma_field_moi, binning)
+
+    import pdb; pdb.set_trace()
 
     print('Done.')
 
@@ -151,6 +168,6 @@ for ibin in np.arange(1,5):
             'cl_extext' : cl_extext
             }
 
-    outfile = f'./data/Xs_spectra_bin{ibin}.pkl'
+    outfile = f'./data/Xs_spectra_bin{ibin}_dr4.pkl'
 
     pickle.dump(outobj, open(outfile, 'wb'))
