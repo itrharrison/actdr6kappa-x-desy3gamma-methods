@@ -5,6 +5,8 @@ import yaml
 import pickle
 import copy
 
+from mpi4py import MPI
+
 import sacc
 import healpy as hp
 import pymaster as nmt
@@ -104,15 +106,23 @@ kappa_map_weight =  0.5709974
 
 kappa_mask = kappa_mask**mask_pwr
 
+regions = np.unique(jk_regions)[:-1]
+
 # kappa_map = kappa_map * np.mean(kappa_mask)
 
 # comb_mask = hp.read_map('./data/combined_mask.fits')
 
-for ireg in np.unique(jk_regions)[:-1]:
+comm = MPI.COMM_WORLD
+rank = comm.Get_rank()
+size = comm.Get_size()
 
-    print(f"Region {ireg}...")
+region_tag_list = np.array_split(regions, size)[rank]
 
-    region_mask = jk_regions!=ireg
+for ireg, region_tag in enumerate(region_tag_list):
+
+    print('Getting Cls from region {} on proc {}...'.format(region_tag, rank))
+
+    region_mask = jk_regions!=region_tag
 
     kappa_field = nmt.NmtField(kappa_mask*region_mask, [kappa_map * kappa_map_weight], beam=None, masked_on_input=True, lmax=elmax)#, beam=None, masked_on_input=False)
 
@@ -180,6 +190,6 @@ for ireg in np.unique(jk_regions)[:-1]:
                 'cl_extext' : cl_extext
                 }
 
-        outfile = f'./data/region{ireg}_Xs_spectra_bin{ibin}_dr6.pkl'
+        outfile = f'./data/region{region_tag}_Xs_spectra_bin{ibin}_dr6.pkl'
 
         pickle.dump(outobj, open(outfile, 'wb'))
