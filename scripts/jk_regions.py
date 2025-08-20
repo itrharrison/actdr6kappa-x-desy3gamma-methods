@@ -31,7 +31,8 @@ data_dir = './'
 
 nside_dgrade = 2048
 
-kappa_mask = hp.read_map(os.path.join(data_dir, 'data/act/masks/act_GAL060_mask_healpy_nside=2048.fits'))
+# kappa_mask = hp.read_map(os.path.join(data_dir, 'data/act/masks/act_GAL060_mask_healpy_nside=2048.fits'))
+kappa_mask = hp.read_map(os.path.join(data_dir, 'data/act/hp_nside2048_lmax6000_act_dr4.01_s14s15_D56_lensing_mask.fits'))
 kappa_mask = np.where(kappa_mask > 1, 1, kappa_mask)
 kappa_mask = np.where(kappa_mask < 1e-2, 0, kappa_mask)
 
@@ -52,7 +53,7 @@ minra = ra[comb_mask > 0].min()
 maxdec = dec[comb_mask > 0].max()
 mindec = dec[comb_mask > 0].min()
 
-nregions = 50
+nregions = 28
 
 ra_initial, dec_initial = kmeans_radec.test.generate_randoms_radec(minra, maxra, mindec, maxdec, nregions)
 
