@@ -23,6 +23,10 @@ class NullSpectrum():
         self.ell_min = ini['config']['ell_min']
         self.ell_max = ini['config']['ell_max']
         self.delta_ell = ini['config']['delta_ell']
+        if 'append_l20' in ini['config']:
+            self.append_l20 = ini['config']['append_l20']
+        else:
+            self.append_l20 = False
         self.nsims = ini['config']['nsims']
 
         self.dirs = ini['dirs']
@@ -50,6 +54,8 @@ class NullSpectrum():
 
         ell_bin_edges = []
         ell_bin_edges.append(0)
+        if self.append_l20:
+            ell_bin_edges.append(20)
         for i in np.arange(0, nbins - 1, 1):
             if i == 0:
                 ell_bin_edges.append(self.ell_min)
@@ -99,7 +105,7 @@ class NullSpectrum():
             for ispin, spin_tag in enumerate(self.tracer_config['tracer_spin_tags']):
                 
                 if isim is not None:
-                    tracer_map_fname = self.tracer_config['tracer_sim_maps'].replace('bin_tag', bin_tag).replace('sim_tag', f'{isim:05}')
+                    tracer_map_fname = self.tracer_config['tracer_sim_maps'].replace('bin_tag', bin_tag).replace('sim_tag', f'{isim:04}')
                     # sims_dir = os.path.join(self.dirs['root'], self.dirs['sims_dir'])
                     sims_dir = self.dirs['root']
                     if spin_tag == 'g1':
@@ -263,7 +269,8 @@ if __name__ == '__main__':
 
     import pickle
 
-    nullspectra = NullSpectrum(config_fname='scripts/v0.5_null_list_publicmaps.yaml')
+    #nullspectra = NullSpectrum(config_fname='scripts/v0.5_null_list_publicmaps.yaml')
+    nullspectra = NullSpectrum(config_fname='scripts/baseline_lmin20_newsims_null_list_publicmaps.yaml')
 
     nullspectra.setup_binning()
     nullspectra.setup_tracer_fields()

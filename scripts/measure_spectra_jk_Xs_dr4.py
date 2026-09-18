@@ -26,10 +26,10 @@ def compute_master(f_a, f_b, wsp):
     cl_decoupled = wsp.decouple_cell(cl_coupled)
     return cl_decoupled
 
-# data_dir = '/scratch/c.c1025819/actdr6_nulls/'
-data_dir = './'
+data_dir = '/scratch/c.c1025819/actdr6_nulls/'
+#data_dir = './'
 
-jk_regions = pickle.load(open('jk_regions_dr4.pkl', 'rb'))['jk_regions']
+jk_regions = pickle.load(open('./data/jk_regions_dr4.pkl', 'rb'))['jk_regions']
 
 s = sacc.Sacc()
 s_data = s.load_fits('../actdr4kappa-x-desy3gamma-data/data/UNBLINDED_ACTPlanck_tSZfree_ACTDR4-kappa_DESY3-gamma_data_simCov.fits')

@@ -1,0 +1,79 @@
+dirs:
+  root: ${ACTDIR}
+  # root: './'
+  kappa_dir: 'data/act/maps/'
+  # sims_dir: 'data/act/maps/'
+  kappa_mask_dir: 'data/act/maps/'
+  tracer_dir: 'data/des/v0.5_DESY3_cat_e1e2_maps/'
+  transfer_dir: 'data/act/maps/'
+  workspace_dir: 'workspaces_newmask/'
+  cl_output_dir: 'newsims_output_spectra/'
+
+config:
+  nside: 4096
+  nside_downgrade: 2048
+  ell_min: 40
+  append_l20: True
+  # ell_max: 2200
+  ell_max: 6143
+  delta_ell: 300
+  # delta_ell: 40
+  nsims: 400
+  analysis_range: [40, 1200]
+  # nsims: 4
+  blind: False
+
+tracer:
+  tracer_spin: 2
+  tracer_spin_tags: ['g1', 'g2']
+  tracer_nbins: 4
+  tracer_bin_tags: ['bin1', 'bin2', 'bin3', 'bin4']
+  # tracer_bin_tags: ['bin4']
+  # ['bin1', 'bin2', 'bin3', 'bin4']
+  tracer_maps:
+    bin1:
+      g1: 'v0.5_DESY3_meansub_Rcorrected_g1_map_bin1_nside2048.fits'
+      g2: 'v0.5_DESY3_meansub_Rcorrected_g2_map_bin1_nside2048.fits'
+    bin2:
+      g1: 'v0.5_DESY3_meansub_Rcorrected_g1_map_bin2_nside2048.fits'
+      g2: 'v0.5_DESY3_meansub_Rcorrected_g2_map_bin2_nside2048.fits'
+    bin3:
+      g1: 'v0.5_DESY3_meansub_Rcorrected_g1_map_bin3_nside2048.fits'
+      g2: 'v0.5_DESY3_meansub_Rcorrected_g2_map_bin3_nside2048.fits'
+    bin4:
+      g1: 'v0.5_DESY3_meansub_Rcorrected_g1_map_bin4_nside2048.fits'
+      g2: 'v0.5_DESY3_meansub_Rcorrected_g2_map_bin4_nside2048.fits'
+  tracer_masks:
+    bin1: 'v0.5_weight_map_bin1_nside2048.fits'
+    bin2: 'v0.5_weight_map_bin2_nside2048.fits'
+    bin3: 'v0.5_weight_map_bin3_nside2048.fits'
+    bin4: 'v0.5_weight_map_bin4_nside2048.fits'
+  #tracer_sim_maps: 'DESY3_mock_shear_maps_with_nmtCls/maps/act_corr_g1g2_map_DESY3_bin_tag_nside2048_sim_tag.fits'
+  #tracer_sim_maps: 'sims/DESY3_mock_shear_maps_with_nmtCls/maps/act_corr_g1g2_map_DESY3_bin_tag_nside2048_sim_tag.fits'
+  tracer_sim_maps: 'sims/act_correlated_DESY3_shear_sims/act_corr_g1g2_map_DESY3_bin1_nside2048_sim_tag.fits'
+
+nulltests:
+
+  # - name: 'cib-deproj'
+  # - name: 'tsz-deproj'
+
+  # - name: 'baseline'
+  #   kappa_map: # the real data map
+  #   kappa_mask: # the mask to be used
+  #   transfer_function: # the normalising transfer function
+  #   sim_maps: # the simulated maps
+  #   map_null: True
+
+  - name: 'baseline'
+    kappa_map: 'baseline/kappa_alm_data_act_dr6_lensing_v1_baseline.fits'
+    kappa_mask: 'baseline/mask_act_dr6_lensing_v1_healpix_nside_4096_baseline.fits'
+    # transfer_function: 'all_MV_mc_bias_MV_sims1-400'
+    sim_maps: 'baseline/simulations/kappa_alm_sim_act_dr6_lensing_v1_baseline'
+    map_null: True
+
+  #- name: 'curl'
+  #  kappa_map: 'curl/kappa_alm_data_act_dr6_lensing_v1_curl.fits'
+  #  kappa_mask: 'curl/mask_act_dr6_lensing_v1_healpix_nside_4096_curl.fits'
+  #  sim_maps: 'curl/simulations/kappa_alm_sim_act_dr6_lensing_v1_curl'
+  #  map_null: True
+
