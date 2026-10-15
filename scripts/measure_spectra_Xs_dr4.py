@@ -136,7 +136,7 @@ for ibin in np.arange(1,5):
     wsp_s1s1.compute_coupling_matrix(kappa_field, stellar_field, binning)
     # wsp_moi.compute_coupling_matrix(kappa_field_moi, gamma_field_moi, binning)
 
-    import pdb; pdb.set_trace()
+    # import pdb; pdb.set_trace()
 
     print('Done.')
 

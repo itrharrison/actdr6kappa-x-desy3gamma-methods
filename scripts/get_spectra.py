@@ -72,7 +72,8 @@ class NullSpectrum():
             bpws[lh_edges[i]:lh_edges[i + 1]] = i
             weights[lh_edges[i]:lh_edges[i + 1]] = 1.
 
-        self.ell_bins = nmt.NmtBin(nside=self.nside, bpws=bpws, ells=ells, weights=weights, lmax=self.ell_max)
+        # self.ell_bins = nmt.NmtBin(nside=self.nside, bpws=bpws, ells=ells, weights=weights, lmax=self.ell_max)
+        self.ell_bins = nmt.NmtBin(bpws=bpws, ells=ells, weights=weights, lmax=self.ell_max)
         print('Done.')
 
     def setup_tracer_fields(self, masked_on_input=False, g1_convention=-1., isim=None):
@@ -163,9 +164,11 @@ class NullSpectrum():
                                                spin=[0,2], method="spline", order=0,
                                                extensive=False, bsize=100000,
                                                nside_mode="pow2", boundary="constant", verbose=False)
+            print(f'read mask from {kappa_mask_fname} and converted to healpy with mask weight')
         except ValueError:
             kappa_mask = hp.read_map(os.path.join(self.dirs['root'], self.dirs['kappa_mask_dir'], kappa_mask_fname))**2.
             kappa_mask_weight = 1.
+            print(f'read mask from {kappa_mask_fname}')
 
         if remove_mask_apod:
             # kappa_mask = np.piecewise(kappa_mask, [kappa_mask>=1-1e-10, kappa_mask<1-1e-10], [1, 0])
